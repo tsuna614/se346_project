@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se346_project/src/authentication-screens/detail_signup_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,7 +14,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordTextController = TextEditingController();
   final _confirmPasswordTextController = TextEditingController();
 
-  void _submit() {}
+  void _submit() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => DetailSignUpScreen(
+          email: _emailTextController.text,
+          password: _passwordTextController.text,
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -25,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.grey[800],
+      backgroundColor: const Color(0xFF4CA414),
       body: Center(
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -40,7 +50,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF3C7C0C),
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -49,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Create a new account and start your journey.',
-                  style: TextStyle(fontSize: 14, color: Color(0xFF3C7C0C)),
+                  style: TextStyle(fontSize: 14, color: Colors.white),
                 ),
               ),
               const SizedBox(
@@ -66,7 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 },
                 child: const Text.rich(
                   TextSpan(
-                    style: TextStyle(color: Color(0xFF3C7C0C)),
+                    style: TextStyle(color: Colors.white),
                     children: [
                       TextSpan(text: 'Already have an account? '),
                       TextSpan(
@@ -95,8 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               'Email',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 44, 94, 6),
+                color: Colors.white,
               ),
             ),
           ),
@@ -105,20 +114,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: _emailTextController,
-            style: const TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10)),
               filled: true,
-              // fill color: CBE4B9
-              fillColor: const Color(0xFFCBE4B9).withOpacity(0.5),
+              fillColor: Colors.white.withOpacity(0.1),
               hintText: 'Enter your email',
-              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (value == null || value.trim().isEmpty) {
                 return 'Please enter your email';
+              }
+              if (!value.contains('@') || !value.contains('.')) {
+                return 'Your email format is incorrect';
               }
               return null;
             },
@@ -132,8 +143,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               'Password',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 44, 94, 6),
+                color: Colors.white,
               ),
             ),
           ),
@@ -142,20 +152,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: _passwordTextController,
-            style: const TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10)),
               filled: true,
-              fillColor: const Color(0xFFCBE4B9).withOpacity(0.5),
+              fillColor: Colors.white.withOpacity(0.1),
               hintText: 'Enter your password',
-              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
             ),
             obscureText: true,
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (value == null || value.trim().isEmpty) {
                 return 'Please enter your password';
+              }
+              if (value.length < 6) {
+                return 'Password must be at least 6 characters long';
               }
               return null;
             },
@@ -169,8 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               'Confirm Password',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 44, 94, 6),
+                color: Colors.white,
               ),
             ),
           ),
@@ -179,21 +191,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: _confirmPasswordTextController,
-            style: const TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10)),
               filled: true,
-              // fill color: CBE4B9
-              fillColor: const Color(0xFFCBE4B9).withOpacity(0.5),
+              fillColor: Colors.white.withOpacity(0.1),
               hintText: 'Confirm your password',
-              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
             ),
             obscureText: true,
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (value == null || value.trim().isEmpty) {
                 return 'Please confirm your password';
+              }
+              if (value != _passwordTextController.text) {
+                return 'Passwords do not match';
               }
               return null;
             },
@@ -203,8 +217,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  double _padding = 6;
-
   Widget _buildAnimatedButton() {
     return GestureDetector(
       onTap: () {
@@ -212,37 +224,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _submit();
         }
       },
-      onTapDown: (_) {
-        setState(() {
-          _padding = 0;
-        });
-      },
-      onTapCancel: () {
-        setState(() {
-          _padding = 6;
-        });
-      },
-      onTapUp: (_) {
-        setState(() {
-          _padding = 6;
-        });
-      },
-      child: AnimatedContainer(
-        padding: EdgeInsets.only(bottom: _padding),
-        margin: EdgeInsets.only(top: -(_padding - 6)),
-        decoration: BoxDecoration(
-          // color: Theme.of(context).primaryColor,
-          color: const Color(0xFF3C7C0C),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        duration: const Duration(milliseconds: 50),
+      child: Container(
         child: Container(
           width: double.infinity,
           height: 50,
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: const Color(0xFF3C7C0C)),
-            borderRadius: BorderRadius.circular(10),
+            color: const Color(0xFF3C7C0C),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: const Center(
             child: FittedBox(
@@ -253,7 +241,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   letterSpacing: 3,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF3C7C0C),
+                  color: Colors.white,
                 ),
               ),
             ),
