@@ -55,60 +55,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF4CA414),
-      body: Center(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Let\'s get started!',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      body: Stack(
+        children: [
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Let\'s get started!',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Create a new account and start your journey.',
-                  style: TextStyle(fontSize: 14, color: Colors.white),
-                ),
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              _buildLoginForm(),
-              const SizedBox(
-                height: 40,
-              ),
-              _buildAnimatedButton(),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text.rich(
-                  TextSpan(
-                    style: TextStyle(color: Colors.white),
-                    children: [
-                      TextSpan(text: 'Already have an account? '),
+                  const SizedBox(height: 6),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Create a new account and start your journey.',
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  _buildLoginForm(),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  _buildAnimatedButton(),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text.rich(
                       TextSpan(
-                          text: 'Sign In.',
-                          style: TextStyle(fontWeight: FontWeight.bold))
-                    ],
+                        style: TextStyle(color: Colors.white),
+                        children: [
+                          TextSpan(text: 'Already have an account? '),
+                          TextSpan(
+                              text: 'Sign In.',
+                              style: TextStyle(fontWeight: FontWeight.bold))
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
-      )),
+            ),
+          )),
+        ],
+      ),
     );
   }
 
@@ -244,24 +248,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
       },
       child: Container(
-        child: Container(
-          width: double.infinity,
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFF3C7C0C),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Center(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                "Sign Up",
-                style: TextStyle(
-                  letterSpacing: 3,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+        width: double.infinity,
+        height: 50,
+        decoration: BoxDecoration(
+          color: const Color(0xFF3C7C0C),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              "Sign Up",
+              style: TextStyle(
+                letterSpacing: 3,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ),
@@ -270,3 +272,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
+
+// class CustomClipPathPurple extends CustomClipper<Path> {
+//   CustomClipPathPurple({required this.context});
+
+//   final BuildContext context;
+
+//   @override
+//   Path getClip(Size size) {
+//     // print(size);
+//     // double w = size.width;
+//     // double h = size.height;
+
+//     double w = MediaQuery.of(context).size.width;
+//     double h = MediaQuery.of(context).size.height;
+
+//     final path = Path();
+
+//     // path.moveTo(0, 0);
+//     // path.lineTo(w * 0.5, h * 0.0);
+//     // path.lineTo(w * 0.85, h * 0.12);
+//     // path.lineTo(w, h * 0.12);
+
+//     path.moveTo(0, 0);
+//     path.lineTo(0, h * 0.05);
+//     path.lineTo(w, h * 0.2);
+//     // path.quadraticBezierTo(w * 0.1, h * 0.12, w * 0.5, h * 0.08);
+//     // path.quadraticBezierTo(w * 0.8, h * 0.05, w, h * 0.11);
+//     path.lineTo(w, 0);
+//     path.close();
+
+//     return path;
+//   }
+
+//   @override
+//   bool shouldReclip(CustomClipper<Path> oldClipper) {
+//     return false;
+//   }
+// }
+
+// class CustomClipPathPurpleAccent extends CustomClipper<Path> {
+//   CustomClipPathPurpleAccent({required this.context});
+
+//   final BuildContext context;
+
+//   @override
+//   Path getClip(Size size) {
+//     // print(size);
+//     // double w = size.width;
+//     // double h = size.height;
+
+//     double w = MediaQuery.of(context).size.width;
+//     double h = MediaQuery.of(context).size.height;
+
+//     final path = Path();
+
+//     path.moveTo(0, 0);
+//     path.lineTo(0, h * 0.2);
+//     path.lineTo(w, h * 0.05);
+
+//     // path.quadraticBezierTo(w * 0.1, h * 0.1, w * 0.7, h * 0.12);
+//     // path.quadraticBezierTo(w * 1, h * 0.13, w, h * 0.08);
+//     path.lineTo(w, 0);
+//     path.close();
+
+//     return path;
+//   }
+
+//   @override
+//   bool shouldReclip(CustomClipper<Path> oldClipper) {
+//     return false;
+//   }
+// }

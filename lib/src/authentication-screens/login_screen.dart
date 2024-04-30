@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:se346_project/src/authentication-screens/signup_screen.dart';
@@ -16,8 +17,23 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordTextController = TextEditingController();
 
   final dio = Dio();
+  final auth = FirebaseAuth.instance;
 
-  void _submit() async {}
+  void _submit() async {
+    try {
+      auth.signInWithEmailAndPassword(
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+      );
+    } on FirebaseAuthException catch (err) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(err.message.toString()),
+        ),
+      );
+    }
+  }
 
   void _navigateToSignUp(BuildContext context) {
     Navigator.of(context).push(

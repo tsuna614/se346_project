@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:se346_project/src/app-screens/home_screen.dart';
 import 'package:se346_project/src/data/global_data.dart' as globals;
 
 class DetailSignUpScreen extends StatefulWidget {
@@ -24,30 +24,40 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
 
   final dio = Dio();
 
+  final _firebase = FirebaseAuth.instance;
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _firstNameTextField.dispose();
     _lastNameTextField.dispose();
     super.dispose();
   }
 
   void _submit() async {
-    await dio.post(
-      '${globals.baseUrl}/user/addUser',
-      data: {
-        'userId': '123456',
-        'email': widget.email,
-        'password': widget.password,
-        'firstName': _firstNameTextField.text,
-        'lastName': _lastNameTextField.text,
-      },
-    ).catchError((error) {
-      throw Exception('Failed to create user');
-    }).then((value) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+    await _firebase
+        .createUserWithEmailAndPassword(
+            email: widget.email, password: widget.password)
+        .then((value) async {
+      await dio.post(
+        '${globals.baseUrl}/user/addUser',
+        data: {
+          'userId': '123456',
+          'email': widget.email,
+          'password': widget.password,
+          'firstName': _firstNameTextField.text,
+          'lastName': _lastNameTextField.text,
+        },
+      ).catchError((error) {
+        throw Exception('Failed to create user');
+      }).then((value) {
+        // successfully created user
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      });
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString()),
         ),
       );
     });
