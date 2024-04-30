@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:se346_project/src/authentication-screens/detail_signup_screen.dart';
+import 'package:se346_project/src/data/global_data.dart' as globals;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -14,15 +16,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordTextController = TextEditingController();
   final _confirmPasswordTextController = TextEditingController();
 
-  void _submit() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => DetailSignUpScreen(
-          email: _emailTextController.text,
-          password: _passwordTextController.text,
+  final dio = Dio();
+
+  void _submit() async {
+    final response = await dio
+        .get("${globals.baseUrl}/user/checkEmail/${_emailTextController.text}");
+
+    if (response.toString() == 'Email already exists' && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email already exists'),
+          // backgroundColor: Colors.red,
         ),
-      ),
-    );
+      );
+      return;
+    }
+
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => DetailSignUpScreen(
+            email: _emailTextController.text,
+            password: _passwordTextController.text,
+          ),
+        ),
+      );
+    }
   }
 
   @override

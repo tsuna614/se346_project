@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:se346_project/src/app-screens/home_screen.dart';
+import 'package:se346_project/src/data/global_data.dart' as globals;
 
 class DetailSignUpScreen extends StatefulWidget {
   const DetailSignUpScreen({
@@ -19,7 +22,7 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
   final _firstNameTextField = TextEditingController();
   final _lastNameTextField = TextEditingController();
 
-  // File? _selectedImage;
+  final dio = Dio();
 
   @override
   void dispose() {
@@ -29,11 +32,25 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    print(widget.email);
-    print(widget.password);
-    print(_firstNameTextField.text);
-    print(_lastNameTextField.text);
+  void _submit() async {
+    await dio.post(
+      '${globals.baseUrl}/user/addUser',
+      data: {
+        'userId': '123456',
+        'email': widget.email,
+        'password': widget.password,
+        'firstName': _firstNameTextField.text,
+        'lastName': _lastNameTextField.text,
+      },
+    ).catchError((error) {
+      throw Exception('Failed to create user');
+    }).then((value) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+    });
   }
 
   @override

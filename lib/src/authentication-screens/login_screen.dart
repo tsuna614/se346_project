@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:se346_project/src/authentication-screens/signup_screen.dart';
@@ -14,10 +15,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
 
-  void _submit() {
-    print('Email: ${_emailTextController.text}');
-    print('Password: ${_passwordTextController.text}');
-  }
+  final dio = Dio();
+
+  void _submit() async {}
 
   void _navigateToSignUp(BuildContext context) {
     Navigator.of(context).push(
