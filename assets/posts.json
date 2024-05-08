@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "comments": [
+      { "text": "Great post!", "image": null, "id": 1, "name": "Alice" },
+      {
+        "text": "I agree with you.",
+        "image": "https://example.com/image1.jpg",
+        "id": 2,
+        "name": "Bob"
+      },
+      { "text": "Thanks!", "image": null, "id": 6, "name": "Charlie" },
+      { "text": "Thanks!", "image": null, "id": 7, "name": "David" },
+      { "text": "MADAM ADA", "image": null, "id": 8, "name": "Eve" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Jane Doe",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "comments": [{ "text": "Nice!", "image": null, "id": 3, "name": "Frank" }]
+  },
+  {
+    "id": 3,
+    "name": "John Smith",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "comments": []
+  },
+  {
+    "id": 4,
+    "name": "Jane Smith",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "comments": [
+      {
+        "text": "Keep it up!",
+        "image": "https://example.com/image2.jpg",
+        "id": 4,
+        "name": "Grace"
+      }
+    ]
+  }
+]

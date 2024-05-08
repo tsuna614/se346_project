@@ -1,50 +1,75 @@
+import 'dart:convert';
+import 'dart:io'; // Add this import
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:se346_project/src/widgets/bottom_navigation_bar.dart';
 import 'package:se346_project/src/widgets/post.dart';
-import 'package:se346_project/src/data/sample_posts_data.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   final auth = FirebaseAuth.instance;
+  //Todo: Sample implementation using json file. Replace it with api fetching later.
+  Future<List<dynamic>> _loadPosts() async {
+    // Read the JSON file from assets
+    String jsonString = await rootBundle.loadString('assets/posts.json');
+
+    List<dynamic> jsonData = jsonDecode(jsonString);
+
+    // Explicitly cast each item in the list to Map<String, dynamic>
+    List<Map<String, dynamic>> posts =
+        jsonData.map((item) => item as Map<String, dynamic>).toList();
+
+    return posts;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigator(),
-      appBar: AppBar(
-        //Use assets/images/logo.png then "Home Screen"
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/Logo.png',
-              height: 30,
-            ),
-            const SizedBox(width: 8.0),
-            const Text('Homepage',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                )),
-          ],
+        bottomNavigationBar: BottomNavigator(),
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/images/Logo.png',
+                height: 30,
+              ),
+              const SizedBox(width: 8.0),
+              const Text('Homepage',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  )),
+            ],
+          ),
         ),
-      ),
-      body: Center(
-          child: SingleChildScrollView(
-        child: Column(
-          children: samplePosts
-              .map((post) => Post(
-                    name: post['name']!,
-                    content: post['content']!,
-                    onLike: () {},
-                    onComment: () {},
-                    onShare: () {},
-                  ))
-              .toList(),
-        ),
-      )),
-    );
+        body: Center(
+            child: SingleChildScrollView(
+                child: FutureBuilder(
+          future: _loadPosts(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Show loading indicator while loading data
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            } else {
+              List<dynamic> jsonData = snapshot.data!;
+              return Column(
+                children: [
+                  for (var post in jsonData)
+                    Post(
+                      name: post['name'],
+                      content: post['content'],
+                      comments: post['comments'],
+                      avatarUrl: post['avatarUrl'],
+                    ),
+                ],
+              );
+            }
+          },
+        ))));
   }
 }

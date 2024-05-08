@@ -38,7 +38,8 @@ dependencies:
   dio: ^5.4.3+1
   firebase_auth: ^4.17.8
   firebase_core: ^2.27.0
-
+  transparent_image: ^2.0.1
+  flutter_bloc: ^8.1.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,6 +64,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/Logo.png
+    - assets/posts.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
