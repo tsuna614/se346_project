@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'package:se346_project/src/app-screens/drawer_screen.dart';
+import 'package:se346_project/src/app-screens/media/home_screen.dart';
+import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
+import 'package:se346_project/src/app-screens/settings/settings_screen.dart';
+import 'package:se346_project/src/app-screens/social/social_screen.dart';
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  Widget appScreen = HomeScreen();
+
+  double xOffset = 0;
+  double yOffset = 0;
+
+  bool isDrawerOpen = false;
+
+  void switchScreen(int screenIndex) {
+    setState(() {
+      xOffset = MediaQuery.of(context).size.width + 100;
+    });
+
+    Future.delayed(Duration(milliseconds: 300), () {
+      setState(() {
+        switch (screenIndex) {
+          case 0:
+            appScreen = HomeScreen();
+            break;
+          case 1:
+            appScreen = const SocialScreen();
+            break;
+          case 2:
+            appScreen = const ProfileScreen();
+            break;
+          case 3:
+            appScreen = const SettingsScreen();
+            break;
+          default:
+            appScreen = HomeScreen();
+        }
+        xOffset = 290;
+      });
+    });
+  }
+
+  void alternateDrawer() {
+    isDrawerOpen
+        ? setState(() {
+            xOffset = 0;
+            yOffset = 0;
+            isDrawerOpen = false;
+          })
+        : setState(() {
+            xOffset = 290;
+            yOffset = 80;
+            isDrawerOpen = true;
+          });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        DrawerScreen(switchScreen: switchScreen),
+        AnimatedContainer(
+          transform: Matrix4.translationValues(xOffset, yOffset, 0)
+            ..scale(isDrawerOpen ? 0.85 : 1.00),
+          duration: Duration(milliseconds: 200),
+          // decoration: BoxDecoration(
+          //   color: Colors.white,
+          //   borderRadius: isDrawerOpen
+          //       ? BorderRadius.circular(40)
+          //       : BorderRadius.circular(0),
+          // ),
+          child: ClipRRect(
+            borderRadius: isDrawerOpen
+                ? BorderRadius.circular(40)
+                : BorderRadius.circular(0),
+            child: GestureDetector(
+              onTap: () {
+                if (isDrawerOpen) {
+                  alternateDrawer();
+                }
+              },
+              child: Scaffold(
+                extendBodyBehindAppBar: true,
+                body: Stack(
+                  children: [
+                    appScreen,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        // gesture detector for swiping to the right to open the drawer
+        Positioned(
+          left: 0,
+          child: GestureDetector(
+            onPanEnd: (details) {
+              // Swiping in right direction.
+              if (details.velocity.pixelsPerSecond.dx > 0 && !isDrawerOpen) {
+                alternateDrawer();
+              }
+            },
+            child: Container(
+              width: 20,
+              height: MediaQuery.of(context).size.height,
+              color: Colors.transparent,
+            ),
+          ),
+        ),
+        // gesture detector for swiping to the left to close the drawer
+        Positioned(
+          right: 0,
+          child: GestureDetector(
+            onPanEnd: (details) {
+              // Swiping in left direction.
+              if (details.velocity.pixelsPerSecond.dx < 0 && isDrawerOpen) {
+                alternateDrawer();
+              }
+            },
+            child: Container(
+              width: 20,
+              height: MediaQuery.of(context).size.height,
+              color: Colors.transparent,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

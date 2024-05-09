@@ -14,12 +14,12 @@ class Post extends StatelessWidget {
   final String? avatarUrl;
 
   const Post({
-    Key? key,
+    super.key,
     required this.name,
     required this.content,
     this.comments = const [],
     this.avatarUrl,
-  }) : super(key: key);
+  });
 
   void onLike() {
     // Handle like action
@@ -103,8 +103,8 @@ class CommentPage extends StatefulWidget {
   final CommentBloc commentBloc;
   final List<dynamic> comments; // Receive comments here
 
-  CommentPage({Key? key, required this.commentBloc, required this.comments})
-      : super(key: key);
+  const CommentPage(
+      {super.key, required this.commentBloc, required this.comments});
 
   @override
   _CommentPageState createState() => _CommentPageState();
@@ -117,9 +117,9 @@ class _CommentPageState extends State<CommentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comments'),
+        title: const Text('Comments'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -147,7 +147,7 @@ class _CommentPageState extends State<CommentPage> {
               },
             );
           } else {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -161,14 +161,14 @@ class _CommentPageState extends State<CommentPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: TextField(
                   controller: _commentController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter your comment...',
                   ),
                 ),
               ),
             ),
             IconButton(
-              icon: Icon(Icons.send),
+              icon: const Icon(Icons.send),
               onPressed: () {
                 widget.commentBloc.commentEventSink
                     .add(AddComment(_commentController.text));
@@ -195,12 +195,12 @@ class CommentItem extends StatelessWidget {
   final VoidCallback onRemove;
 
   const CommentItem({
-    Key? key,
+    super.key,
     required this.text,
     this.image,
     required this.name,
     required this.onRemove,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +244,7 @@ class CommentItem extends StatelessWidget {
                 ),
               if (image != null) const SizedBox(height: 8.0),
               Text(text),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               //Todo: implement user checking to allow for removal.
               // ElevatedButton(
               //   onPressed: onRemove,
