@@ -8,7 +8,8 @@ import 'package:se346_project/src/widgets/bottom_navigation_bar.dart';
 import 'package:se346_project/src/widgets/post.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+  final void Function() alternateDrawer;
+  HomeScreen({super.key, required this.alternateDrawer});
 
   final auth = FirebaseAuth.instance;
   //Todo: Sample implementation using json file. Replace it with api fetching later.
@@ -30,6 +31,11 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
         bottomNavigationBar: const BottomNavigator(),
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                alternateDrawer();
+              },
+              icon: Icon(Icons.menu)),
           title: const Text(
             'Homepage',
             style: TextStyle(

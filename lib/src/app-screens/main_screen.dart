@@ -13,7 +13,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  Widget appScreen = HomeScreen();
+  late Widget appScreen;
 
   double xOffset = 0;
   double yOffset = 0;
@@ -29,7 +29,9 @@ class _MainScreenState extends State<MainScreen> {
       setState(() {
         switch (screenIndex) {
           case 0:
-            appScreen = HomeScreen();
+            appScreen = HomeScreen(
+              alternateDrawer: alternateDrawer,
+            );
             break;
           case 1:
             appScreen = const SocialScreen();
@@ -41,7 +43,9 @@ class _MainScreenState extends State<MainScreen> {
             appScreen = const SettingsScreen();
             break;
           default:
-            appScreen = HomeScreen();
+            appScreen = HomeScreen(
+              alternateDrawer: alternateDrawer,
+            );
         }
         xOffset = 290;
       });
@@ -60,6 +64,14 @@ class _MainScreenState extends State<MainScreen> {
             yOffset = 80;
             isDrawerOpen = true;
           });
+  }
+
+  @override
+  void initState() {
+    appScreen = HomeScreen(
+      alternateDrawer: alternateDrawer,
+    );
+    super.initState();
   }
 
   @override
