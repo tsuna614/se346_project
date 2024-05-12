@@ -7,7 +7,7 @@
       { "text": "Great post!", "image": null, "id": 1, "name": "Alice" },
       {
         "text": "I agree with you.",
-        "image": "https://example.com/image1.jpg",
+        "image": "https://picsum.photos/200/300",
         "id": 2,
         "name": "Bob"
       },
@@ -19,6 +19,7 @@
   {
     "id": 2,
     "name": "Jane Doe",
+    "media": "https://picsum.photos/200/300",
     "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
     "comments": [{ "text": "Nice!", "image": null, "id": 3, "name": "Frank" }]
   },
