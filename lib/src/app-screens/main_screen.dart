@@ -38,7 +38,9 @@ class _MainScreenState extends State<MainScreen> {
             appScreen = const SocialScreen();
             break;
           case 2:
-            appScreen = const ProfileScreen();
+            appScreen = ProfileScreen(
+              alternateDrawer: alternateDrawer,
+            );
             break;
           case 3:
             appScreen = const SettingsScreen();
@@ -70,10 +72,14 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
+    //Todo: change back later
     appScreen = HomeScreen(
       alternateDrawer: alternateDrawer,
       appName: widget.appName,
     );
+    // appScreen = ProfileScreen(
+    //   alternateDrawer: alternateDrawer,
+    // );
     super.initState();
   }
 
