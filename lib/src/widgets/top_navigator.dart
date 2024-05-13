@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:se346_project/src/app-screens/media/home_screen.dart';
 
-class BottomNavigator extends StatefulWidget {
-  const BottomNavigator({super.key});
+class TopNavigator extends StatefulWidget {
+  const TopNavigator({Key? key}) : super(key: key);
 
   @override
-  _BottomNavigatorState createState() => _BottomNavigatorState();
+  _TopNavigatorState createState() => _TopNavigatorState();
 }
 
-class _BottomNavigatorState extends State<BottomNavigator> {
+class _TopNavigatorState extends State<TopNavigator> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -18,35 +18,38 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     });
   }
 
-  //Grey on not selected, green on selected
-  static const textStyle = TextStyle(
-      fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.grey);
+  static const double iconSize = 20.0;
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      selectedFontSize: 0,
+      unselectedFontSize: 0,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(FontAwesomeIcons.home),
-          label: 'Home',
+          icon: Icon(FontAwesomeIcons.home, size: iconSize),
+          label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(FontAwesomeIcons.bell),
-          label: 'Notices',
+          icon: Icon(FontAwesomeIcons.bell, size: iconSize),
+          label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(FontAwesomeIcons.comment),
-          label: 'Chat',
+          icon: Icon(FontAwesomeIcons.comment, size: iconSize),
+          label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(FontAwesomeIcons.user),
-          label: 'Profile',
+          icon: Icon(FontAwesomeIcons.user, size: iconSize),
+          label: '',
         ),
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.green,
       unselectedItemColor: Colors.grey,
+      type: BottomNavigationBarType.fixed,
       onTap: _onItemTapped,
+      iconSize: iconSize,
+      selectedIconTheme: IconThemeData(color: Colors.green),
     );
   }
 }

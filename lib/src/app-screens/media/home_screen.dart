@@ -1,25 +1,26 @@
 import 'dart:convert';
-import 'dart:io'; // Add this import
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:se346_project/src/widgets/bottom_navigation_bar.dart';
+import 'package:se346_project/src/widgets/top_navigator.dart';
 import 'package:se346_project/src/widgets/post.dart';
 
 class HomeScreen extends StatelessWidget {
   final void Function() alternateDrawer;
-  HomeScreen({super.key, required this.alternateDrawer});
+  final String appName;
+
+  HomeScreen({Key? key, required this.alternateDrawer, required this.appName})
+      : super(key: key);
 
   final auth = FirebaseAuth.instance;
-  //Todo: Sample implementation using json file. Replace it with api fetching later.
+
   Future<List<dynamic>> _loadPosts() async {
-    // Read the JSON file from assets
     String jsonString = await rootBundle.loadString('assets/posts.json');
 
     List<dynamic> jsonData = jsonDecode(jsonString);
 
-    // Explicitly cast each item in the list to Map<String, dynamic>
     List<Map<String, dynamic>> posts =
         jsonData.map((item) => item as Map<String, dynamic>).toList();
 
@@ -29,45 +30,83 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: const BottomNavigator(),
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                alternateDrawer();
-              },
-              icon: Icon(Icons.menu)),
-          title: const Text(
-            'Homepage',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
+      backgroundColor: Colors.grey[200],
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              leading: IconButton(
+                icon: Icon(Icons.menu, color: Colors.green),
+                onPressed: alternateDrawer,
+              ),
+              //Use the variable appName to display the app name
+              title: const Text('Notfacebook',
+                  style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold)),
+              floating: true,
+              expandedHeight: 50.0,
             ),
-          ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _TopNavigatorDelegate(),
+            ),
+            SliverToBoxAdapter(
+              child: FutureBuilder(
+                future: _loadPosts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  } else {
+                    List<dynamic> jsonData = snapshot.data as List<dynamic>;
+                    return Column(
+                      children: [
+                        for (var post in jsonData)
+                          Post(
+                            name: post['name'],
+                            content: post['content'],
+                            comments: post['comments'],
+                            avatarUrl: post['avatarUrl'],
+                            //Conditionally check if media property exist
+                            mediaUrl: post.containsKey('media')
+                                ? post['media']
+                                : null,
+                          ),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
-        body: Center(
-            child: SingleChildScrollView(
-                child: FutureBuilder(
-          future: _loadPosts(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // Show loading indicator while loading data
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            } else {
-              List<dynamic> jsonData = snapshot.data!;
-              return Column(
-                children: [
-                  for (var post in jsonData)
-                    Post(
-                      name: post['name'],
-                      content: post['content'],
-                      comments: post['comments'],
-                      avatarUrl: post['avatarUrl'],
-                    ),
-                ],
-              );
-            }
-          },
-        ))));
+      ),
+    );
+  }
+}
+
+class _TopNavigatorDelegate extends SliverPersistentHeaderDelegate {
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return TopNavigator();
+  }
+
+  @override
+  double get maxExtent => 50.0;
+
+  @override
+  double get minExtent => 50.0;
+
+  @override
+  bool shouldRebuild(covariant _TopNavigatorDelegate oldDelegate) {
+    return false;
   }
 }

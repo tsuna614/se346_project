@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/blocs/CommentBloc.dart';
@@ -12,13 +13,14 @@ class Post extends StatelessWidget {
   final String content;
   final List<dynamic> comments;
   final String? avatarUrl;
-
+  final String? mediaUrl;
   const Post({
     super.key,
     required this.name,
     required this.content,
     this.comments = const [],
     this.avatarUrl,
+    this.mediaUrl,
   });
 
   void onLike() {
@@ -48,7 +50,10 @@ class Post extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(0.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
         child: Column(
@@ -69,26 +74,100 @@ class Post extends StatelessWidget {
                             Colors.primaries.length],
                   ),
                 const SizedBox(width: 8.0),
-                Text(name),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name),
+                    Text(
+                      '2 hours ago',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 8.0),
-            Text(content),
+            Column(
+              children: [
+                Text(content),
+                if (mediaUrl != null)
+                  FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: mediaUrl!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
+                    imageErrorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        height: 200,
+                        color: Colors.grey[300],
+                      );
+                    },
+                  ),
+              ],
+            ),
             const SizedBox(height: 8.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.thumb_up),
-                  onPressed: onLike,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.thumb_up,
+                      size: 16.0,
+                    ),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      '1',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.comment),
-                  onPressed: () => onComment(context),
+                Row(
+                  children: [
+                    Text(
+                      '${comments.length} comments',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      '0 shares',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: onShare,
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.thumb_up),
+                      onPressed: onLike,
+                    ),
+                    Text('Like'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.comment),
+                      onPressed: () => onComment(context),
+                    ),
+                    Text('Comment'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.share),
+                      onPressed: onShare,
+                    ),
+                    Text('Share'),
+                  ],
                 ),
               ],
             ),

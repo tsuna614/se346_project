@@ -7,7 +7,7 @@ import 'package:se346_project/src/app-screens/social/social_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
+  final String appName = 'Notfacebook';
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
           case 0:
             appScreen = HomeScreen(
               alternateDrawer: alternateDrawer,
+              appName: widget.appName,
             );
             break;
           case 1:
@@ -45,6 +46,7 @@ class _MainScreenState extends State<MainScreen> {
           default:
             appScreen = HomeScreen(
               alternateDrawer: alternateDrawer,
+              appName: widget.appName,
             );
         }
         xOffset = 290;
@@ -70,6 +72,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     appScreen = HomeScreen(
       alternateDrawer: alternateDrawer,
+      appName: widget.appName,
     );
     super.initState();
   }
