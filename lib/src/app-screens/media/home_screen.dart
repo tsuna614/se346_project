@@ -48,10 +48,6 @@ class HomeScreen extends StatelessWidget {
               floating: true,
               expandedHeight: 50.0,
             ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _TopNavigatorDelegate(),
-            ),
             SliverToBoxAdapter(
               child: FutureBuilder(
                 future: _loadPosts(),
@@ -66,21 +62,19 @@ class HomeScreen extends StatelessWidget {
                     );
                   } else {
                     List<dynamic> jsonData = snapshot.data as List<dynamic>;
-                    return Column(
-                      children: [
-                        for (var post in jsonData)
-                          Post(
-                            name: post['name'],
-                            content: post['content'],
-                            comments: post['comments'],
-                            avatarUrl: post['avatarUrl'],
-                            //Conditionally check if media property exist
-                            mediaUrl: post.containsKey('media')
-                                ? post['media']
-                                : null,
-                          ),
-                      ],
-                    );
+                    return Column(children: [
+                      for (var post in jsonData)
+                        Post(
+                          id: post['id'],
+                          name: post['name'],
+                          content: post['content'],
+                          comments: post['comments'],
+                          avatarUrl: post['avatarUrl'],
+                          //Conditionally check if media property exist
+                          mediaUrl:
+                              post.containsKey('media') ? post['media'] : null,
+                        ),
+                    ]);
                   }
                 },
               ),
@@ -89,24 +83,5 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _TopNavigatorDelegate extends SliverPersistentHeaderDelegate {
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return TopNavigator();
-  }
-
-  @override
-  double get maxExtent => 50.0;
-
-  @override
-  double get minExtent => 50.0;
-
-  @override
-  bool shouldRebuild(covariant _TopNavigatorDelegate oldDelegate) {
-    return false;
   }
 }

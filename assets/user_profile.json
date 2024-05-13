@@ -1,0 +1,53 @@
+{
+  "id": "1",
+  "name": "John Doe",
+  "email": "abc@gm.com",
+  "phone": "1234567890",
+  "avatarUrl": "http://www.picsum.photos/200/300",
+  "bio": "I am a developer . Lorem posum cykz",
+  "profileBackground": "http://www.picsum.photos/200/400",
+  "posts": [
+    {
+      "id": "1",
+      "posterId": "1",
+      "content": "Content 1",
+      "comments": [
+        {
+          "id": "1",
+          "name": "Jane Doe",
+          "avatar": "http://www.picsum.photos/200/300",
+          "image": "http://www.picsum.photos/200/300",
+          "text": "Comment 1"
+        },
+        {
+          "id": "2",
+          "name": "John Smith",
+          "avatar": "http://www.picsum.photos/200/300",
+          "image": "http://www.picsum.photos/200/300",
+          "text": "Comment 2"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "posterId": "1",
+      "content": "Content 2",
+      "comments": [
+        {
+          "id": "3",
+          "name": "Jane Smith",
+          "avatar": "http://www.picsum.photos/200/300",
+          "image": "http://www.picsum.photos/200/300x",
+          "text": "Comment 3"
+        },
+        {
+          "id": "4",
+          "name": "John Doe",
+          "avatar": "http://www.picsum.photos/200/300",
+          "image": "http://www.picsum.photos/200/300",
+          "text": "Comment 4"
+        }
+      ]
+    }
+  ]
+}
