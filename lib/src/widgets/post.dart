@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -98,6 +99,7 @@ class Post extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(content),
                 if (mediaUrl != null)
@@ -214,7 +216,6 @@ class _CommentPageState extends State<CommentPage> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Center(
-          //Center user name
           child: Text(widget.postData.name),
         ),
         leading: IconButton(
@@ -449,7 +450,10 @@ class PostForCommentPage extends StatelessWidget {
             const SizedBox(height: 8.0),
             Column(
               children: [
-                Text(content),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(content, textAlign: TextAlign.left),
+                ),
                 if (mediaUrl != null)
                   FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
