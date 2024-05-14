@@ -10,7 +10,8 @@
     {
       "id": "1",
       "posterId": "1",
-      "content": "Content 1",
+      "content": "Content 1AAAAAAAAA",
+      "mediaUrl": "http://www.picsum.photos/200/300",
       "comments": [
         {
           "id": "1",
