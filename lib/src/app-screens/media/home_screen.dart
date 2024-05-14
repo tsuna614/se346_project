@@ -19,11 +19,23 @@ class HomeScreen extends StatelessWidget {
   Future<List<dynamic>> _loadPosts() async {
     String jsonString = await rootBundle.loadString('assets/posts.json');
 
+    // List<dynamic> jsonData = jsonDecode(jsonString);
+
+    // List<Map<String, dynamic>> posts =
+    //     jsonData.map((item) => item as Map<String, dynamic>).toList();
     List<dynamic> jsonData = jsonDecode(jsonString);
-
-    List<Map<String, dynamic>> posts =
-        jsonData.map((item) => item as Map<String, dynamic>).toList();
-
+    List<PostData> posts = [];
+    for (var post in jsonData) {
+      PostData postData = PostData(
+        id: post['id'],
+        name: post['name'],
+        content: post['content'],
+        comments: post['comments'],
+        mediaUrl: post['mediaUrl'],
+        avatarUrl: post['avatarUrl'],
+      );
+      posts.add(postData);
+    }
     return posts;
   }
 
@@ -61,18 +73,17 @@ class HomeScreen extends StatelessWidget {
                       child: Text(snapshot.error.toString()),
                     );
                   } else {
-                    List<dynamic> jsonData = snapshot.data as List<dynamic>;
+                    List<PostData> jsonData = snapshot.data as List<PostData>;
                     return Column(children: [
                       for (var post in jsonData)
                         Post(
-                          id: post['id'],
-                          name: post['name'],
-                          content: post['content'],
-                          comments: post['comments'],
-                          avatarUrl: post['avatarUrl'],
+                          id: post.id,
+                          name: post.name,
+                          content: post.content,
+                          comments: post.comments,
+                          avatarUrl: post.avatarUrl,
                           //Conditionally check if media property exist
-                          mediaUrl:
-                              post.containsKey('media') ? post['media'] : null,
+                          mediaUrl: post.mediaUrl,
                         ),
                     ]);
                   }
