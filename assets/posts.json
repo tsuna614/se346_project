@@ -1,50 +1,73 @@
 [
   {
     "id": "1",
+    "posterId": "user1",
     "name": "John Doe",
-    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "content": "This is the content of the first post.",
     "comments": [
-      { "text": "Great post!", "image": null, "id": 1, "name": "Alice" },
       {
-        "text": "I agree with you.",
-        "image": "https://picsum.photos/200/300",
-        "id": 2,
-        "name": "Bob"
+        "id": "101",
+        "postId": "1",
+        "commenterId": "user2",
+        "commenterName": "Jane Smith",
+        "commenterAvatarUrl": "https://picsum.photos/200",
+        "content": "Nice post!",
+        "mediaUrl": "https://picsum.photos/200",
+        "createdAt": "2024-05-27T08:00:00Z",
+        "updatedAt": "2024-05-27T08:00:00Z"
       },
-      { "text": "Thanks!", "image": null, "id": 6, "name": "Charlie" },
-      { "text": "Thanks!", "image": null, "id": 7, "name": "David" },
       {
-        "text": "MADAM ADAAAAAAAAAAAAAAAAAAAAA",
-        "image": null,
-        "id": 8,
-        "name": "Eve"
+        "id": "102",
+        "postId": "1",
+        "commenterId": "user3",
+        "commenterName": "Alice Johnson",
+        "commenterAvatarUrl": "https://picsum.photos/200",
+        "content": "Great post!",
+        "mediaUrl": null,
+        "createdAt": "2024-05-27T08:00:00Z",
+        "updatedAt": "2024-05-27T08:00:00Z"
       }
-    ]
+    ],
+    "likes": ["user2", "user3"],
+    "shares": ["user2"],
+    "posterAvatarUrl": "https://picsum.photos/200",
+    "mediaUrl": "https://picsum.photos/500",
+    "groupId": "group1",
+    "sharePostId": null,
+    "createdAt": "2024-05-27T08:00:00Z",
+    "updatedAt": "2024-05-27T08:00:00Z",
+    "isEdited": false
   },
   {
     "id": "2",
-    "name": "Jane Doe",
-    "mediaUrl": "https://picsum.photos/200/300",
-    "content": "Content 1111111",
-    "comments": [{ "text": "Nice!", "image": null, "id": 3, "name": "Frank" }]
+    "posterId": "user2",
+    "name": "Jane Smith",
+    "content": "This is the content of the second post.",
+    "comments": [],
+    "likes": ["user1", "user3"],
+    "shares": [],
+    "posterAvatarUrl": "https://picsum.photos/200",
+    "mediaUrl": null,
+    "groupId": null,
+    "sharePostId": null,
+    "createdAt": "2024-05-26T08:00:00Z",
+    "updatedAt": "2024-05-26T08:00:00Z",
+    "isEdited": false
   },
   {
     "id": "3",
-    "name": "John Smith",
-    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    "comments": []
-  },
-  {
-    "id": "4",
-    "name": "Jane Smith",
-    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    "comments": [
-      {
-        "text": "Keep it up!",
-        "image": "https://example.com/image2.jpg",
-        "id": 4,
-        "name": "Grace"
-      }
-    ]
+    "posterId": "user3",
+    "name": "Alice Johnson",
+    "content": "This is the content of the third post.",
+    "comments": [],
+    "likes": [],
+    "shares": ["user1", "user2"],
+    "posterAvatarUrl": "https://picsum.photos/200",
+    "mediaUrl": "https://picsum.photos/500",
+    "groupId": null,
+    "sharePostId": null,
+    "createdAt": "2024-05-25T08:00:00Z",
+    "updatedAt": "2024-05-25T08:00:00Z",
+    "isEdited": false
   }
 ]
