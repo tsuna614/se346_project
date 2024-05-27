@@ -35,7 +35,9 @@ class _MainScreenState extends State<MainScreen> {
             );
             break;
           case 1:
-            appScreen = const SocialScreen();
+            appScreen = SocialScreen(
+              alternateDrawer: alternateDrawer,
+            );
             break;
           case 2:
             appScreen = ProfileScreen(

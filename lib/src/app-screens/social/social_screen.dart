@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
-import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
+import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/app-screens/social/other_people_profile_screen.dart';
 
 class SocialScreen extends StatefulWidget {
@@ -15,13 +15,58 @@ class SocialScreen extends StatefulWidget {
 
 class _SocialScreenState extends State<SocialScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<UserProfileData> _searchResults = [];
+  final ScrollController _scrollController = ScrollController();
 
-  Future<void> _searchUser() async {
-    final results = await GeneralAPI().searchUser(_searchController.text);
+  final int limit = 5;
+  int page = 1;
+  int totalUsers = 0;
+  List<UserProfileData> _searchResults = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _searchUser({bool isLoadMore = false}) async {
+    if (_isLoading) return;
+
     setState(() {
-      _searchResults = results;
+      _isLoading = true;
     });
+
+    final results = await GeneralAPI()
+        .searchUser(_searchController.text, limit: limit, page: page);
+    final total = await GeneralAPI().getUserCount(_searchController.text);
+
+    setState(() {
+      if (isLoadMore) {
+        _searchResults.addAll(results);
+      } else {
+        _searchResults = results;
+      }
+      totalUsers = total;
+      _isLoading = false;
+    });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      if (_searchResults.length < totalUsers) {
+        setState(() {
+          page++;
+        });
+        _searchUser(isLoadMore: true);
+      }
+    }
   }
 
   @override
@@ -63,14 +108,26 @@ class _SocialScreenState extends State<SocialScreen> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _searchUser,
+              onPressed: () {
+                setState(() {
+                  page = 1;
+                  _searchResults.clear();
+                });
+                _searchUser();
+              },
               child: Text('Search'),
             ),
             SizedBox(height: 16.0),
             Expanded(
               child: ListView.builder(
-                itemCount: _searchResults.length,
+                controller: _scrollController,
+                itemCount: _searchResults.length + 1,
                 itemBuilder: (context, index) {
+                  if (index == _searchResults.length) {
+                    return _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : SizedBox();
+                  }
                   final user = _searchResults[index];
                   return SocialFriendItem(profileData: user);
                 },
@@ -93,7 +150,6 @@ class SocialFriendItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //Todo: Push profile
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => OtherProfile(profileData: profileData),
         ));

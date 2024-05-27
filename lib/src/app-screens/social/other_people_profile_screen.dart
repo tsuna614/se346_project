@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:se346_project/src/data/types.dart';
 
 class OtherProfile extends StatefulWidget {
   final UserProfileData profileData;
@@ -113,15 +112,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         ),
                       ),
 
-                      for (PostData post in user.posts!)
-                        Post(
-                          id: post.id,
-                          name: user.name,
-                          content: post.content,
-                          comments: post.comments,
-                          avatarUrl: user.avatarUrl,
-                          mediaUrl: post.mediaUrl,
-                        ),
+                      for (PostData post in user.posts!) Post(postData: post),
 
                       SizedBox(height: 20),
                       Center(

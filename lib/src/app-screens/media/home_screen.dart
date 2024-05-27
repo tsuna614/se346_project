@@ -1,11 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:se346_project/src/widgets/top_navigator.dart';
+import 'package:se346_project/src/api/generalAPI.dart';
+
 import 'package:se346_project/src/widgets/post.dart';
+import 'package:se346_project/src/data/types.dart';
 
 class HomeScreen extends StatelessWidget {
   final void Function() alternateDrawer;
@@ -15,29 +14,6 @@ class HomeScreen extends StatelessWidget {
       : super(key: key);
 
   final auth = FirebaseAuth.instance;
-
-  Future<List<dynamic>> _loadPosts() async {
-    String jsonString = await rootBundle.loadString('assets/posts.json');
-
-    // List<dynamic> jsonData = jsonDecode(jsonString);
-
-    // List<Map<String, dynamic>> posts =
-    //     jsonData.map((item) => item as Map<String, dynamic>).toList();
-    List<dynamic> jsonData = jsonDecode(jsonString);
-    List<PostData> posts = [];
-    for (var post in jsonData) {
-      PostData postData = PostData(
-        id: post['id'],
-        name: post['name'],
-        content: post['content'],
-        comments: post['comments'],
-        mediaUrl: post['mediaUrl'],
-        avatarUrl: post['avatarUrl'],
-      );
-      posts.add(postData);
-    }
-    return posts;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +38,7 @@ class HomeScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: FutureBuilder(
-                future: _loadPosts(),
+                future: GeneralAPI().loadHomePosts(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -77,13 +53,7 @@ class HomeScreen extends StatelessWidget {
                     return Column(children: [
                       for (var post in jsonData)
                         Post(
-                          id: post.id,
-                          name: post.name,
-                          content: post.content,
-                          comments: post.comments,
-                          avatarUrl: post.avatarUrl,
-                          //Conditionally check if media property exist
-                          mediaUrl: post.mediaUrl,
+                          postData: post,
                         ),
                     ]);
                   }

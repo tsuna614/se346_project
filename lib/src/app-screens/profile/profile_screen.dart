@@ -1,9 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:se346_project/src/data/types.dart';
 
 class ProfileScreen extends StatefulWidget {
   final void Function() alternateDrawer;
@@ -15,35 +15,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Future<UserProfileData> _loadUser() async {
-    String jsonString = await rootBundle.loadString('assets/user_profile.json');
-    Map<String, dynamic> jsonData = jsonDecode(jsonString);
-
-    List<PostData> posts = [];
-    for (var post in jsonData['posts']) {
-      PostData postData = PostData(
-        id: post['id'],
-        name: jsonData['name'],
-        content: post['content'],
-        comments: post['comments'],
-        mediaUrl: post['mediaUrl'],
-      );
-      posts.add(postData);
-    }
-
-    UserProfileData userProfileData = UserProfileData(
-      id: jsonData['id'],
-      name: jsonData['name'],
-      email: jsonData['email'],
-      phone: jsonData['phone'],
-      avatarUrl: jsonData['avatarUrl'],
-      bio: jsonData['bio'],
-      posts: posts,
-      profileBackground: jsonData['profileBackground'],
-    );
-    return userProfileData;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SliverToBoxAdapter(
             child: FutureBuilder(
-              future: _loadUser(),
+              future: GeneralAPI().loadCurrentUserProfile(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -154,12 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (user.posts != null)
                         for (var post in user.posts!)
                           Post(
-                            id: post.id,
-                            name: user.name,
-                            content: post.content,
-                            comments: post.comments,
-                            avatarUrl: user.avatarUrl,
-                            mediaUrl: post.mediaUrl,
+                            postData: post,
                           ),
                       SizedBox(height: 20),
                       Center(
@@ -197,25 +163,4 @@ class BezierClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return false;
   }
-}
-
-class UserProfileData {
-  final String id;
-  final String name;
-  final String email;
-  final String? phone;
-  final String? avatarUrl;
-  final String? bio;
-  final List<PostData>? posts;
-  final String? profileBackground;
-
-  UserProfileData(
-      {required this.id,
-      required this.name,
-      required this.email,
-      this.phone,
-      this.avatarUrl,
-      this.bio,
-      this.posts,
-      this.profileBackground});
 }
