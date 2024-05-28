@@ -34,20 +34,24 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void getGroupName(String groupId) async {
-    try {
-      final response =
-          await http.get(Uri.parse('your_group_name_api_endpoint/$groupId'));
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        setState(() {
-          groupName = jsonData['name'];
-        });
-      } else {
-        throw Exception('Failed to load group name');
-      }
-    } catch (e) {
-      print('Error fetching group name: $e');
-    }
+    if (groupId == null)
+      return;
+    else
+      groupName = "Group Name XX";
+    // try {
+    //   final response =
+    //       await http.get(Uri.parse('your_group_name_api_endpoint/$groupId'));
+    //   if (response.statusCode == 200) {
+    //     final jsonData = json.decode(response.body);
+    //     setState(() {
+    //       groupName = jsonData['name'];
+    //     });
+    //   } else {
+    //     throw Exception('Failed to load group name');
+    //   }
+    // } catch (e) {
+    //   print('Error fetching group name: $e');
+    // }
   }
 
   void _getImage() async {

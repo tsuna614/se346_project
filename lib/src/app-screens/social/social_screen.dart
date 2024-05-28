@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/app-screens/social/other_people_profile_screen.dart';
+import 'package:se346_project/src/widgets/groupPage.dart';
 
 class SocialScreen extends StatefulWidget {
   final void Function() alternateDrawer;
@@ -13,11 +14,13 @@ class SocialScreen extends StatefulWidget {
   _SocialScreenState createState() => _SocialScreenState();
 }
 
-class _SocialScreenState extends State<SocialScreen> {
+class _SocialScreenState extends State<SocialScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final int limit = 5;
+  final int limit = 7;
   int page = 1;
   int totalUsers = 0;
   List<UserProfileData> _searchResults = [];
@@ -26,11 +29,13 @@ class _SocialScreenState extends State<SocialScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -84,57 +89,138 @@ class _SocialScreenState extends State<SocialScreen> {
                 color: Colors.green,
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold)),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Search for Friends',
-              style: TextStyle(
-                color: Colors.green,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Enter a name or email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  page = 1;
-                  _searchResults.clear();
-                });
-                _searchUser();
-              },
-              child: Text('Search'),
-            ),
-            SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _searchResults.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == _searchResults.length) {
-                    return _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : SizedBox();
-                  }
-                  final user = _searchResults[index];
-                  return SocialFriendItem(profileData: user);
-                },
-              ),
-            ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'Friends'),
+            Tab(text: 'Groups'),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildFriendsTab(),
+          _buildGroupsTab(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFriendsTab() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Search for Friends',
+            style: TextStyle(
+              color: Colors.green,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8.0),
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Enter a name or email',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                page = 1;
+                _searchResults.clear();
+              });
+              _searchUser();
+            },
+            child: Text('Search'),
+          ),
+          SizedBox(height: 16.0),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _searchResults.length + 1,
+              itemBuilder: (context, index) {
+                if (index == _searchResults.length) {
+                  return _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : SizedBox();
+                }
+                final user = _searchResults[index];
+                return SocialFriendItem(profileData: user);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupsTab() {
+    // Implement the group search functionality similar to the user search
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Search for Groups',
+            style: TextStyle(
+              color: Colors.green,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8.0),
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Enter a group name or topic',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          ElevatedButton(
+            onPressed: () {
+              // Add group search logic here
+            },
+            child: Text('Search'),
+          ),
+          SizedBox(height: 16.0),
+          // Implement the group search results list here
+          Expanded(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                children: [
+                  GroupSearchResultItem(
+                    groupData: GroupData(
+                      id: '1',
+                      name: 'Group name',
+                      description:
+                          'This is a group AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                      isMember: true,
+                    ),
+                  ),
+                  GroupSearchResultItem(
+                    groupData: GroupData(
+                      id: '2',
+                      name: 'Group 2',
+                      description: 'This is another group',
+                      isMember: false,
+                      bannerImgUrl: "https://picsum.photos/200/300",
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

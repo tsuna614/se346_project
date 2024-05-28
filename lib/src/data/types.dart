@@ -205,9 +205,44 @@ class GroupData {
 
   // Method to get group posts
   Future<List<PostData>> getGroupPosts() async {
+    //Todo: implement get group posts
     // Implementation to retrieve posts using postIds
     // This could be fetching posts from a database or API
-    return [];
+    //Return 2 sample posts, 1 with img , and one with img and comment, use picsum
+
+    PostData post1 = PostData(
+      id: '1',
+      posterId: '1',
+      name: 'User 1',
+      content: 'This is a post with an image',
+      comments: [],
+      posterAvatarUrl: 'https://picsum.photos/200',
+      mediaUrl: 'https://picsum.photos/200',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    PostData post2 = PostData(
+      id: '2',
+      posterId: '2',
+      name: 'User 2',
+      content: 'This is a post with an image and a comment',
+      comments: [
+        CommentData(
+          id: '1',
+          postId: '2',
+          commenterId: '1',
+          commenterName: 'User 1',
+          content: 'This is a comment',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        )
+      ],
+      posterAvatarUrl: 'https://picsum.photos/200',
+      mediaUrl: 'https://picsum.photos/200',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    return [post1, post2];
   }
 
   // Method to get member list
