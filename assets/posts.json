@@ -1,12 +1,12 @@
 [
   {
-    "id": "1",
+    "_id": "1",
     "posterId": "user1",
     "name": "John Doe",
     "content": "This is the content of the first post.",
     "comments": [
       {
-        "id": "101",
+        "_id": "101",
         "postId": "1",
         "commenterId": "user2",
         "commenterName": "Jane Smith",
@@ -17,7 +17,7 @@
         "updatedAt": "2024-05-27T08:00:00Z"
       },
       {
-        "id": "102",
+        "_id": "102",
         "postId": "1",
         "commenterId": "user3",
         "commenterName": "Alice Johnson",
@@ -39,7 +39,7 @@
     "isEdited": false
   },
   {
-    "id": "2",
+    "_id": "2",
     "posterId": "user2",
     "name": "Jane Smith",
     "content": "This is the content of the second post.",
@@ -55,7 +55,7 @@
     "isEdited": false
   },
   {
-    "id": "3",
+    "_id": "3",
     "posterId": "user3",
     "name": "Alice Johnson",
     "content": "This is the content of the third post.",

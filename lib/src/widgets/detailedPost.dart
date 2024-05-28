@@ -4,6 +4,7 @@ import 'package:se346_project/src/blocs/CommentBloc.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/widgets/commentItem.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:se346_project/src/utils/convertTime.dart';
 
 const _avatarSize = 40.0;
 
@@ -164,7 +165,7 @@ class PostAndCommentInDetailedPage extends StatelessWidget {
                   children: [
                     Text(name),
                     Text(
-                      createdAt.toIso8601String(),
+                      convertTime(createdAt),
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],

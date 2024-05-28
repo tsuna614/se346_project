@@ -8,6 +8,7 @@ import 'package:se346_project/src/blocs/CommentBloc.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/widgets/commentItem.dart';
 import 'package:se346_project/src/widgets/detailedPost.dart';
+import 'package:se346_project/src/utils/convertTime.dart';
 
 const _avatarSize = 40.0;
 
@@ -23,8 +24,6 @@ class Post extends StatelessWidget {
     // Handle like action
   }
 
-  // A sample implementation of onComment.
-  // Todo: replace it with api fetching later.
   void onComment(BuildContext context) {
     Navigator.push(
       context,
@@ -42,25 +41,6 @@ class Post extends StatelessWidget {
 
   void onShare() {
     // Handle share action
-  }
-  //If less than a minute, return "Just now"
-  // If less than an hour, return "x minutes ago"
-  // If less than a day, return "x hours ago"
-  // If less than a week, return "x days ago"
-  String convertTime(DateTime time) {
-    final now = DateTime.now();
-    final difference = now.difference(time);
-    if (difference.inSeconds < 60) {
-      return 'Just now';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} minutes ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours} hours ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else {
-      return time.toString();
-    }
   }
 
   @override
@@ -80,7 +60,10 @@ class Post extends StatelessWidget {
                 if (postData.posterAvatarUrl != null)
                   CircleAvatar(
                     radius: _avatarSize / 2,
-                    backgroundImage: NetworkImage(postData.posterAvatarUrl!),
+                    //If img is null or "", use default color
+                    backgroundImage: postData.posterAvatarUrl!.isNotEmpty
+                        ? NetworkImage(postData.posterAvatarUrl!)
+                        : null,
                   )
                 else
                   CircleAvatar(
@@ -93,7 +76,40 @@ class Post extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(postData.name),
+                    FutureBuilder<String?>(
+                      future: postData.getGroupName(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text(postData.name);
+                        } else if (snapshot.hasError) {
+                          return Text(postData.name);
+                        } else {
+                          final groupName = snapshot.data;
+                          return RichText(
+                            text: TextSpan(
+                              text: postData.name,
+                              style: DefaultTextStyle.of(context).style,
+                              children: groupName != null
+                                  ? [
+                                      TextSpan(
+                                          text: ' > ',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                          )),
+                                      TextSpan(
+                                        text: groupName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                          );
+                        }
+                      },
+                    ),
                     Text(
                       convertTime(postData.createdAt),
                       style: Theme.of(context).textTheme.caption,

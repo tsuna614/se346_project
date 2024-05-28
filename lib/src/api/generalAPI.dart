@@ -1,11 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:se346_project/src/data/global_data.dart';
 import 'package:se346_project/src/data/types.dart';
 
 class GeneralAPI {
-  static const String BASE_URL = 'https://api.themoviedb.org/3';
+  static Dio dio = Dio();
+  final _firebase = FirebaseAuth.instance;
   //Singleton
   static final GeneralAPI _instance = GeneralAPI._internal();
   List<UserProfileData> _users = [];
@@ -19,9 +24,9 @@ class GeneralAPI {
         await rootBundle.loadString('assets/users_database.json');
     List<dynamic> jsonData = jsonDecode(jsonString);
     for (var user in jsonData) {
-      List<PostData> posts = convertPostsFromJson(user['posts']);
+      List<PostData>? posts = convertPostsFromJson(user['posts']);
       UserProfileData userProfileData = UserProfileData(
-        id: user['id'],
+        id: user['userId'],
         name: user['name'],
         email: user['email'],
         phone: user['phone'],
@@ -53,6 +58,36 @@ class GeneralAPI {
     return result;
   }
 
+  Future<bool?> addPostToWall(
+      String content, File? media, String? sharePostId) async {
+    String? uid = _firebase.currentUser?.uid;
+    if (uid == null) {
+      return null;
+    }
+    //Attach file to a form
+    FormData formData = FormData.fromMap({
+      'userId': uid,
+      'content': content,
+      'media': media != null
+          ? await MultipartFile.fromFile(media.path,
+              filename: media.path.split('/').last)
+          : null,
+      'sharePostId': sharePostId,
+    });
+    //Print all form data value for debugging
+    formData.fields.forEach((element) {
+      print('Field: ${element.key} - ${element.value}');
+    });
+    //Set header for form data
+    Response response = await dio.post('$baseUrl/post/postToWall',
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+        }));
+
+    return response.statusCode == 200;
+  }
+
   //Get total user count, suppl
   Future<int> getUserCount(String username) async {
     if (_users.isEmpty) {
@@ -64,28 +99,51 @@ class GeneralAPI {
         .length;
   }
 
-  Future<List<PostData>> loadHomePosts() async {
+  Future<List<PostData>?> loadHomePosts() async {
     String jsonString = await rootBundle.loadString('assets/posts.json');
     List<dynamic> jsonData = jsonDecode(jsonString);
 
-    List<PostData> posts = convertPostsFromJson(jsonData);
-    return posts;
+    List<PostData>? posts = convertPostsFromJson(jsonData);
+    return posts ?? [];
   }
 
-  Future<UserProfileData> loadCurrentUserProfile() async {
-    String jsonString = await rootBundle.loadString('assets/user_profile.json');
-    Map<String, dynamic> jsonData = jsonDecode(jsonString);
+  Future<UserProfileData?> loadCurrentUserProfile() async {
+    print('Loading current user profile');
+    String? uid = _firebase.currentUser?.uid;
 
-    UserProfileData userProfileData = convertUserProfileFromJson(jsonData);
-    return userProfileData;
+    if (uid == null) {
+      return null;
+    } else {
+      // "/UserWallPosts/:userId",
+      Response response = await dio.get('$baseUrl/post/UserWallPosts/$uid');
+      if (response.statusCode == 200) {
+        print('Response: ${response.data}');
+        Map<String, dynamic> userData = response.data['user'];
+        List<dynamic> postData = response.data['posts'];
+        print('User data: $userData');
+        print('Post data: $postData');
+        userData['posts'] = postData;
+        UserProfileData userProfileData = convertUserProfileFromJson(userData);
+        return userProfileData;
+      } else {
+        String jsonString =
+            await rootBundle.loadString('assets/user_profile.json');
+        Map<String, dynamic> jsonData = jsonDecode(jsonString);
+        UserProfileData userProfileData = convertUserProfileFromJson(jsonData);
+        return userProfileData;
+      }
+    }
   }
 
-  List<PostData> convertPostsFromJson(List<dynamic> jsonData) {
+  List<PostData>? convertPostsFromJson(List<dynamic> jsonData) {
     List<PostData> posts = [];
+    if (jsonData.isEmpty) {
+      return null;
+    }
     for (var post in jsonData) {
       List<CommentData> comments = (post['comments'] as List).map((comment) {
         return CommentData(
-          id: comment['id'],
+          id: comment['_id'],
           postId: comment['postId'],
           commenterId: comment['commenterId'],
           commenterName: comment['commenterName'],
@@ -103,7 +161,7 @@ class GeneralAPI {
         return share as String;
       }).toList();
       PostData postData = PostData(
-        id: post['id'],
+        id: post['_id'],
         posterId: post['posterId'],
         name: post['name'],
         likes: likes,
@@ -111,6 +169,8 @@ class GeneralAPI {
         content: post['content'],
         comments: comments,
         mediaUrl: post['mediaUrl'],
+        sharePostId: post['sharePostId'],
+        groupId: post['groupId'],
         posterAvatarUrl: post['posterAvatarUrl'],
         createdAt: DateTime.parse(post['createdAt']),
         updatedAt: DateTime.parse(post['updatedAt']),
@@ -121,9 +181,10 @@ class GeneralAPI {
   }
 
   UserProfileData convertUserProfileFromJson(Map<String, dynamic> jsonData) {
-    List<PostData> posts = convertPostsFromJson(jsonData['posts']);
+    List<PostData>? posts = convertPostsFromJson(jsonData['posts'] ?? []);
+
     UserProfileData userProfileData = UserProfileData(
-      id: jsonData['id'],
+      id: jsonData['userId'],
       name: jsonData['name'],
       email: jsonData['email'],
       phone: jsonData['phone'],

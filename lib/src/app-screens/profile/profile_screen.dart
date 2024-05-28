@@ -4,6 +4,7 @@ import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/data/types.dart';
+import 'package:se346_project/src/widgets/addPostScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final void Function() alternateDrawer;
@@ -15,6 +16,20 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late Future<UserProfileData?> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = GeneralAPI().loadCurrentUserProfile();
+  }
+
+  void _refreshProfile() {
+    setState(() {
+      _profileFuture = GeneralAPI().loadCurrentUserProfile();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icon(Icons.menu, color: Colors.green),
               onPressed: widget.alternateDrawer,
             ),
-            //Todo: implement check if user is the same as the logged in user
             title: const Text('Profile',
                 style: TextStyle(
                     color: Colors.green,
@@ -37,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               IconButton(
                 icon: Icon(Icons.edit, color: Colors.green),
                 onPressed: () {
-                  //Todo implement edit profile
+                  // Todo implement edit profile
                 },
               ),
             ],
@@ -45,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SliverToBoxAdapter(
             child: FutureBuilder(
-              future: GeneralAPI().loadCurrentUserProfile(),
+              future: _profileFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -63,27 +77,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Container(
                         height: 200,
                         width: double.infinity,
-                        //Add background profile image
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: FadeInImage.memoryNetwork(
-                                    placeholder: kTransparentImage,
-                                    image: user.profileBackground!)
-                                .image,
+                            image: user.profileBackground != null &&
+                                    user.profileBackground!.isNotEmpty
+                                ? FadeInImage.memoryNetwork(
+                                        placeholder: kTransparentImage,
+                                        image: user.profileBackground!)
+                                    .image
+                                : MemoryImage(kTransparentImage),
                             fit: BoxFit.cover,
                           ),
                         ),
-
                         child: ClipPath(
                           clipper: BezierClipper(),
                           child: Column(
                             children: <Widget>[
                               CircleAvatar(
                                 radius: 50,
-                                backgroundImage: FadeInImage.memoryNetwork(
-                                        placeholder: kTransparentImage,
-                                        image: user.avatarUrl ?? '')
-                                    .image,
+                                backgroundImage: user.avatarUrl != null &&
+                                        user.avatarUrl!.isNotEmpty
+                                    ? FadeInImage.memoryNetwork(
+                                            placeholder: kTransparentImage,
+                                            image: user.avatarUrl!)
+                                        .image
+                                    : MemoryImage(kTransparentImage),
                               ),
                               Text(user.name,
                                   style: TextStyle(
@@ -99,7 +117,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
-                      //Posts label
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -110,18 +127,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.green,
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.bold)),
-                            //Add post button
                             Spacer(),
                             IconButton(
                                 icon: Icon(Icons.add_circle_outline,
                                     color: Colors.green),
-                                onPressed: () {
-                                  //Todo implement add post
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddPostScreen()),
+                                  );
+                                  if (result == true) {
+                                    _refreshProfile();
+                                  }
                                 }),
                           ],
                         ),
                       ),
-
                       if (user.posts != null)
                         for (var post in user.posts!)
                           Post(
@@ -129,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                       SizedBox(height: 20),
                       Center(
-                        child: Text('No more post available',
+                        child: Text('No more posts available',
                             style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 15.0,

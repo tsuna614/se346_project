@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/data/types.dart';
+import 'package:se346_project/src/utils/convertTime.dart';
 
 class CommentItem extends StatefulWidget {
   final CommentData comment;
@@ -71,7 +72,7 @@ class _CommentItemState extends State<CommentItem> {
                             Text(widget.comment.commenterName,
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(
-                              '${widget.comment.createdAt}',
+                              '${convertTime(widget.comment.createdAt)}',
                               style: Theme.of(context).textTheme.caption,
                             ),
                             Container(

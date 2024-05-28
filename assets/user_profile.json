@@ -1,5 +1,5 @@
 {
-  "id": "1",
+  "_id": "1",
   "name": "John Doe",
   "email": "abc@gm.com",
   "phone": "1234567890",
@@ -8,13 +8,13 @@
   "profileBackground": "http://www.picsum.photos/200/400",
   "posts": [
     {
-      "id": "1",
+      "_id": "1",
       "posterId": "1",
       "name": "John Doe",
       "content": "This is the content of the first post.",
       "comments": [
         {
-          "id": "101",
+          "_id": "101",
           "postId": "1",
           "commenterId": "user2",
           "commenterName": "Jane Smith",
@@ -25,7 +25,7 @@
           "updatedAt": "2024-05-27T08:00:00Z"
         },
         {
-          "id": "102",
+          "_id": "102",
           "postId": "1",
           "commenterId": "user3",
           "commenterName": "Alice Johnson",
@@ -47,13 +47,13 @@
       "isEdited": false
     },
     {
-      "id": "2",
+      "_id": "2",
       "posterId": "1",
       "name": "John Doe",
       "content": "Content 2",
       "comments": [
         {
-          "id": "3",
+          "_id": "3",
           "postId": "2",
           "commenterId": "user2",
           "commenterName": "Jane Smith",
@@ -64,7 +64,7 @@
           "updatedAt": "2024-05-26T08:00:00Z"
         },
         {
-          "id": "4",
+          "_id": "4",
           "postId": "2",
           "commenterId": "user1",
           "commenterName": "John Doe",

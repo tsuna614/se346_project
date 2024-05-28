@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "userId": "1",
     "name": "John Doe",
     "email": "john.doe@example.com",
     "phone": "1234567890",
@@ -9,13 +9,13 @@
     "profileBackground": "http://www.picsum.photos/200/400",
     "posts": [
       {
-        "id": "1",
+        "_id": "1",
         "posterId": "1",
         "name": "John Doe",
         "content": "This is the content of the first post.",
         "comments": [
           {
-            "id": "101",
+            "_id": "101",
             "postId": "1",
             "commenterId": "2",
             "commenterName": "Jane Smith",
@@ -26,7 +26,7 @@
             "updatedAt": "2024-05-27T08:00:00Z"
           },
           {
-            "id": "102",
+            "_id": "102",
             "postId": "1",
             "commenterId": "3",
             "commenterName": "Alice Johnson",
@@ -48,13 +48,13 @@
         "isEdited": false
       },
       {
-        "id": "2",
+        "_id": "2",
         "posterId": "1",
         "name": "John Doe",
         "content": "Content 2",
         "comments": [
           {
-            "id": "103",
+            "_id": "103",
             "postId": "2",
             "commenterId": "2",
             "commenterName": "Jane Smith",
@@ -65,7 +65,7 @@
             "updatedAt": "2024-05-27T08:00:00Z"
           },
           {
-            "id": "104",
+            "_id": "104",
             "postId": "2",
             "commenterId": "1",
             "commenterName": "John Doe",
@@ -92,7 +92,7 @@
     "updatedAt": "2024-05-27T08:00:00Z"
   },
   {
-    "id": "2",
+    "userId": "2",
     "name": "Jane Smith",
     "email": "jane.smith@example.com",
     "phone": "2345678901",
@@ -101,7 +101,7 @@
     "profileBackground": "http://www.picsum.photos/200/401",
     "posts": [
       {
-        "id": "3",
+        "_id": "3",
         "posterId": "2",
         "name": "Jane Smith",
         "content": "This is the content of the second post.",
@@ -122,7 +122,7 @@
     "updatedAt": "2024-05-27T08:00:00Z"
   },
   {
-    "id": "3",
+    "userId": "3",
     "name": "Alice Johnson",
     "email": "alice.johnson@example.com",
     "phone": "3456789012",
@@ -131,7 +131,7 @@
     "profileBackground": "http://www.picsum.photos/200/402",
     "posts": [
       {
-        "id": "4",
+        "_id": "4",
         "posterId": "3",
         "name": "Alice Johnson",
         "content": "This is the content of the third post.",
@@ -152,7 +152,7 @@
     "updatedAt": "2024-05-27T08:00:00Z"
   },
   {
-    "id": "4",
+    "userId": "4",
     "name": "Bob Brown",
     "email": "adasod@gm.cm",
     "phone": "3456789012",
@@ -161,7 +161,191 @@
     "profileBackground": "http://www.picsum.photos/200/402",
     "posts": [
       {
-        "id": "4",
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      }
+    ],
+    "followers": ["1", "2"],
+    "createdAt": "2024-01-01T08:00:00Z",
+    "updatedAt": "2024-05-27T08:00:00Z"
+  },
+  {
+    "userId": "5",
+    "name": "Bob Brown",
+    "email": "ggasdm@gm",
+    "phone": "3456789012",
+    "avatarUrl": "http://www.picsum.photos/200/302",
+    "bio": "Software engineer and coffee lover.",
+    "profileBackground": "http://www.picsum.photos/200/402",
+    "posts": [
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      },
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      }
+    ],
+    "followers": ["1", "2"],
+    "createdAt": "2024-01-01T08:00:00Z",
+    "updatedAt": "2024-05-27T08:00:00Z"
+  },
+  {
+    "userId": "6",
+    "name": "Bob Brown",
+    "email": "ggasdm@gm",
+    "phone": "3456789012",
+    "avatarUrl": "http://www.picsum.photos/200/302",
+    "bio": "Software engineer and coffee lover.",
+    "profileBackground": "http://www.picsum.photos/200/402",
+    "posts": [
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      },
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      }
+    ],
+    "followers": ["1", "2"],
+    "createdAt": "2024-01-01T08:00:00Z",
+    "updatedAt": "2024-05-27T08:00:00Z"
+  },
+  {
+    "userId": "7",
+    "name": "Bob Brown",
+    "email": "ggasdm@gm",
+    "phone": "3456789012",
+    "avatarUrl": "http://www.picsum.photos/200/302",
+    "bio": "Software engineer and coffee lover.",
+    "profileBackground": "http://www.picsum.photos/200/402",
+    "posts": [
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      },
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      }
+    ],
+    "followers": ["1", "2"],
+    "createdAt": "2024-01-01T08:00:00Z",
+    "updatedAt": "2024-05-27T08:00:00Z"
+  },
+  {
+    "userId": "8",
+    "name": "Bob Brown",
+    "email": "ggasdm@gm",
+    "phone": "3456789012",
+    "avatarUrl": "http://www.picsum.photos/200/302",
+    "bio": "Software engineer and coffee lover.",
+    "profileBackground": "http://www.picsum.photos/200/402",
+    "posts": [
+      {
+        "_id": "4",
+        "posterId": "3",
+        "name": "Alice Johnson",
+        "content": "This is the content of the third post.",
+        "comments": [],
+        "likes": [],
+        "shares": ["1", "2"],
+        "posterAvatarUrl": "https://picsum.photos/200",
+        "mediaUrl": "https://picsum.photos/500",
+        "groupId": null,
+        "sharePostId": null,
+        "createdAt": "2024-05-25T08:00:00Z",
+        "updatedAt": "2024-05-25T08:00:00Z",
+        "isEdited": false
+      },
+      {
+        "_id": "4",
         "posterId": "3",
         "name": "Alice Johnson",
         "content": "This is the content of the third post.",

@@ -38,7 +38,6 @@ class OtherPeopleProfileData {
   final String? avatarUrl;
   final String? profileBackground;
   final String? followers;
-
   final bool? isFollowing;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -129,6 +128,15 @@ class PostData {
     return GroupData(id: '', name: '', description: '');
   }
 
+  Future<String?> getGroupName() async {
+    // Implementation to get group name
+    if (groupId != null) {
+      //Todo : implement get group name
+      return "Normal group";
+    }
+    return null;
+  }
+
   Future<OtherPeopleProfileData> getPosterProfile() async {
     // Implementation to get poster profile
     return OtherPeopleProfileData(
@@ -164,22 +172,67 @@ class GroupData {
   final String id;
   final String name;
   final String description;
-  final String? posterImgUrl;
-  final List<PostData>? posts;
-  final List<String>? members;
-  final List<String>? admins;
-  final List<String>? followers;
+  final String? bannerImgUrl;
+  final List<String>? postIds; // Changed to List of IDs for simplicity
+  final List<GroupMemberData>? members;
+  final List<GroupMemberData>? admins;
+  final List<String>? followers; // Assuming followers are just user IDs
+  bool isMember; // To track if the current user is a member
+
   GroupData({
     required this.id,
     required this.name,
     required this.description,
-    this.posterImgUrl,
-    this.posts,
+    this.bannerImgUrl,
+    this.postIds,
     this.members,
     this.admins,
     this.followers,
+    this.isMember = false,
   });
 
-  Future<void> joinGroup() async {}
-  Future<void> leaveGroup() async {}
+  // Method to join the group
+  Future<void> joinGroup() async {
+    // Implementation to join the group
+    isMember = true;
+  }
+
+  // Method to leave the group
+  Future<void> leaveGroup() async {
+    // Implementation to leave the group
+    isMember = false;
+  }
+
+  // Method to get group posts
+  Future<List<PostData>> getGroupPosts() async {
+    // Implementation to retrieve posts using postIds
+    // This could be fetching posts from a database or API
+    return [];
+  }
+
+  // Method to get member list
+  Future<List<GroupMemberData>> getMembers() async {
+    // Implementation to retrieve member list
+    return members ?? [];
+  }
+
+  // Method to get admin list
+  Future<List<GroupMemberData>> getAdmins() async {
+    // Implementation to retrieve admin list
+    return admins ?? [];
+  }
+
+  // Method to check if a user is following the group
+  bool isFollowing(String userId) {
+    return followers?.contains(userId) ?? false;
+  }
+}
+
+// Only have name, id, and avatar url for quick access
+class GroupMemberData {
+  final String id;
+  final String name;
+  final String? avatarUrl;
+
+  GroupMemberData({required this.id, required this.name, this.avatarUrl});
 }
