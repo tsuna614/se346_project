@@ -76,6 +76,8 @@ class PostData {
   final String? sharePostId;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool? userIsPoster;
+  final bool? userLiked;
   final bool isEdited;
 
   PostData({
@@ -93,6 +95,8 @@ class PostData {
     required this.createdAt,
     required this.updatedAt,
     this.isEdited = false,
+    this.userIsPoster,
+    this.userLiked,
   });
 
   Future<void> addComment(CommentData comment) async {

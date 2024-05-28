@@ -180,21 +180,30 @@ class GroupSearchResultItem extends StatelessWidget {
         leading: groupData.bannerImgUrl != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(4.0),
-                child: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: groupData.bannerImgUrl!,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.grey[300],
-                      child: Icon(Icons.error, color: Colors.red, size: 24),
-                    );
-                  },
-                ),
+                child: groupData.bannerImgUrl != null &&
+                        groupData.bannerImgUrl!.isNotEmpty
+                    ? FadeInImage.memoryNetwork(
+                        placeholder: kTransparentImage,
+                        image: groupData.bannerImgUrl!,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        imageErrorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 50,
+                            height: 50,
+                            color: Colors.grey[300],
+                            child:
+                                Icon(Icons.error, color: Colors.red, size: 24),
+                          );
+                        },
+                      )
+                    : Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.grey[300],
+                        child: Icon(Icons.image, color: Colors.white),
+                      ),
               )
             : CircleAvatar(
                 backgroundColor: Colors.primaries[

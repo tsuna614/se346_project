@@ -88,6 +88,32 @@ class GeneralAPI {
     return response.statusCode == 200;
   }
 
+  //Create group
+  Future<bool?> createGroup(
+      String name, String description, File? media) async {
+    String? uid = _firebase.currentUser?.uid;
+    if (uid == null) {
+      return null;
+    }
+    //Send name, description, and uid in body and banner (media field) in multipart
+    FormData formData = FormData.fromMap({
+      'name': name,
+      'description': description,
+      'userId': uid,
+      'media': media != null
+          ? await MultipartFile.fromFile(media.path,
+              filename: media.path.split('/').last)
+          : null,
+    });
+
+    Response response = await dio.post('$baseUrl/group/',
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+        }));
+    return response.statusCode == 200;
+  }
+
   //Get total user count, suppl
   Future<int> getUserCount(String username) async {
     if (_users.isEmpty) {
@@ -108,7 +134,6 @@ class GeneralAPI {
   }
 
   Future<UserProfileData?> loadCurrentUserProfile() async {
-    print('Loading current user profile');
     String? uid = _firebase.currentUser?.uid;
 
     if (uid == null) {
@@ -117,11 +142,9 @@ class GeneralAPI {
       // "/UserWallPosts/:userId",
       Response response = await dio.get('$baseUrl/post/UserWallPosts/$uid');
       if (response.statusCode == 200) {
-        print('Response: ${response.data}');
         Map<String, dynamic> userData = response.data['user'];
         List<dynamic> postData = response.data['posts'];
-        print('User data: $userData');
-        print('Post data: $postData');
+
         userData['posts'] = postData;
         UserProfileData userProfileData = convertUserProfileFromJson(userData);
         return userProfileData;
@@ -194,5 +217,59 @@ class GeneralAPI {
       profileBackground: jsonData['profileBackground'],
     );
     return userProfileData;
+  }
+
+  Future<List<GroupData>?> searchGroup(String groupName) async {
+    //Attach userid and group name
+    Response response = await dio.get('$baseUrl/group/', queryParameters: {
+      'name': groupName,
+      'userId': _firebase.currentUser?.uid
+    });
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = response.data;
+      List<GroupData> groups = jsonData.map((group) {
+        return convertGroupFromJson(group);
+      }).toList();
+
+      return groups;
+    } else {
+      return null;
+    }
+  }
+
+  GroupData convertGroupFromJson(Map<String, dynamic> jsonData) {
+    List<GroupMemberData> members = (jsonData['members'] as List).map((member) {
+      return GroupMemberData(
+        id: member['id'],
+        name: member['name'],
+        avatarUrl: member['avatarUrl'],
+      );
+    }).toList();
+    List<GroupMemberData> admins = (jsonData['admins'] as List).map((admin) {
+      return GroupMemberData(
+        id: admin['id'],
+        name: admin['name'],
+        avatarUrl: admin['avatarUrl'],
+      );
+    }).toList();
+    GroupData groupData = GroupData(
+      id: jsonData['_id'],
+      name: jsonData['name'],
+      description: jsonData['description'],
+      bannerImgUrl: jsonData['bannerImgUrl'],
+      members: members,
+      admins: admins,
+      isMember: jsonData['isMember'] ?? false,
+    );
+    return groupData;
+  }
+
+  GroupMemberData convertGroupMemberFromJson(Map<String, dynamic> jsonData) {
+    GroupMemberData groupMemberData = GroupMemberData(
+      id: jsonData['id'],
+      name: jsonData['name'],
+      avatarUrl: jsonData['avatarUrl'],
+    );
+    return groupMemberData;
   }
 }
