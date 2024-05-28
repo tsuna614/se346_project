@@ -21,6 +21,7 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
 
   final _firstNameTextField = TextEditingController();
   final _lastNameTextField = TextEditingController();
+  final _bioTextField = TextEditingController();
 
   final dio = Dio();
 
@@ -30,6 +31,7 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
   void dispose() {
     _firstNameTextField.dispose();
     _lastNameTextField.dispose();
+    _bioTextField.dispose();
     super.dispose();
   }
 
@@ -41,11 +43,12 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
       await dio.post(
         '${globals.baseUrl}/user/addUser',
         data: {
-          'userId': '123456',
+          'userId': value.user!.uid,
           'email': widget.email,
           'password': widget.password,
           'firstName': _firstNameTextField.text,
           'lastName': _lastNameTextField.text,
+          'bio': _bioTextField.text,
         },
       ).catchError((error) {
         throw Exception('Failed to create user');
@@ -162,6 +165,35 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Please enter your last name';
+              }
+              return null;
+            },
+            // onSaved: (newValue) => _enteredPassword = newValue!,
+          ),
+          const SizedBox(height: 30),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Bio',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: _bioTextField,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10)),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.1),
+              hintText: 'A little interesting fact about yourself',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your bio';
               }
               return null;
             },
