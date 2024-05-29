@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:se346_project/src/data/global_data.dart';
 import 'package:se346_project/src/data/types.dart';
 
+import 'package:se346_project/src/api/generalConverter.dart';
+
 class GeneralAPI {
   static Dio dio = Dio();
   final _firebase = FirebaseAuth.instance;
@@ -24,7 +26,8 @@ class GeneralAPI {
         await rootBundle.loadString('assets/users_database.json');
     List<dynamic> jsonData = jsonDecode(jsonString);
     for (var user in jsonData) {
-      List<PostData>? posts = convertPostsFromJson(user['posts']);
+      List<PostData>? posts =
+          GeneralConverter.convertPostsFromJson(user['posts']);
       UserProfileData userProfileData = UserProfileData(
         id: user['userId'],
         name: user['name'],
@@ -39,23 +42,25 @@ class GeneralAPI {
     }
   }
 
-  //Todo: change to api later. For now it load from "users_database.json"
-  Future<List<UserProfileData>> searchUser(String username,
-      //Todo: Implement search using api later
-      {int limit = 10,
-      int page = 1}) async {
-    if (_users.isEmpty) {
-      await loadSampleData();
-    }
-    //Search using name only and also limit the result using page and limit
-    List<UserProfileData> result = _users
-        .where(
-            (user) => user.name.toLowerCase().contains(username.toLowerCase()))
-        .skip((page - 1) * limit)
-        .take(limit)
-        .toList();
+  Future<List<UserProfileData>> searchUser(
+    String name,
+    //Todo: Implement search using api later
+    {
+    int limit = 10,
+    int page = 1,
+  }) async {
+    final res = await dio.get('$baseUrl/user/', queryParameters: {
+      'name': name,
+      'userId': _firebase.currentUser?.uid,
+      'limit': limit,
+      'page': page,
+    });
 
-    return result;
+    List<dynamic> jsonData = res.data;
+    List<UserProfileData> users = jsonData.map((user) {
+      return GeneralConverter.convertUserProfileFromJson(user);
+    }).toList();
+    return users;
   }
 
   Future<bool?> addPostToWall(
@@ -92,8 +97,12 @@ class GeneralAPI {
   Future<bool?> createGroup(
       String name, String description, File? media) async {
     String? uid = _firebase.currentUser?.uid;
+
     if (uid == null) {
       return null;
+    }
+    if (description.isEmpty) {
+      description = '...';
     }
     //Send name, description, and uid in body and banner (media field) in multipart
     FormData formData = FormData.fromMap({
@@ -129,8 +138,29 @@ class GeneralAPI {
     String jsonString = await rootBundle.loadString('assets/posts.json');
     List<dynamic> jsonData = jsonDecode(jsonString);
 
-    List<PostData>? posts = convertPostsFromJson(jsonData);
+    List<PostData>? posts = GeneralConverter.convertPostsFromJson(jsonData);
     return posts ?? [];
+  }
+
+  Future<UserProfileData?> loadProfile(String uid) async {
+    if (uid == null) {
+      return null;
+    } else {
+      // "/UserWallPosts/:userId",
+      Response response = await dio.get('$baseUrl/post/UserWallPosts/$uid');
+      if (response.statusCode == 200) {
+        print(response.data);
+        Map<String, dynamic> userData = response.data['user'];
+        List<dynamic> postData = response.data['posts'];
+
+        userData['posts'] = postData;
+        UserProfileData userProfileData =
+            GeneralConverter.convertUserProfileFromJson(userData);
+        return userProfileData;
+      } else {
+        return null;
+      }
+    }
   }
 
   Future<UserProfileData?> loadCurrentUserProfile() async {
@@ -142,81 +172,18 @@ class GeneralAPI {
       // "/UserWallPosts/:userId",
       Response response = await dio.get('$baseUrl/post/UserWallPosts/$uid');
       if (response.statusCode == 200) {
+        print(response.data);
         Map<String, dynamic> userData = response.data['user'];
         List<dynamic> postData = response.data['posts'];
 
         userData['posts'] = postData;
-        UserProfileData userProfileData = convertUserProfileFromJson(userData);
+        UserProfileData userProfileData =
+            GeneralConverter.convertUserProfileFromJson(userData);
         return userProfileData;
       } else {
-        String jsonString =
-            await rootBundle.loadString('assets/user_profile.json');
-        Map<String, dynamic> jsonData = jsonDecode(jsonString);
-        UserProfileData userProfileData = convertUserProfileFromJson(jsonData);
-        return userProfileData;
+        return null;
       }
     }
-  }
-
-  List<PostData>? convertPostsFromJson(List<dynamic> jsonData) {
-    List<PostData> posts = [];
-    if (jsonData.isEmpty) {
-      return null;
-    }
-    for (var post in jsonData) {
-      List<CommentData> comments = (post['comments'] as List).map((comment) {
-        return CommentData(
-          id: comment['_id'],
-          postId: comment['postId'],
-          commenterId: comment['commenterId'],
-          commenterName: comment['commenterName'],
-          commenterAvatarUrl: comment['commenterAvatarUrl'],
-          content: comment['content'],
-          mediaUrl: comment['mediaUrl'],
-          createdAt: DateTime.parse(comment['createdAt']),
-          updatedAt: DateTime.parse(comment['updatedAt']),
-        );
-      }).toList();
-      List<String> likes = (post['likes'] as List).map((like) {
-        return like as String;
-      }).toList();
-      List<String> shares = (post['shares'] as List).map((share) {
-        return share as String;
-      }).toList();
-      PostData postData = PostData(
-        id: post['_id'],
-        posterId: post['posterId'],
-        name: post['name'],
-        likes: likes,
-        shares: shares,
-        content: post['content'],
-        comments: comments,
-        mediaUrl: post['mediaUrl'],
-        sharePostId: post['sharePostId'],
-        groupId: post['groupId'],
-        posterAvatarUrl: post['posterAvatarUrl'],
-        createdAt: DateTime.parse(post['createdAt']),
-        updatedAt: DateTime.parse(post['updatedAt']),
-      );
-      posts.add(postData);
-    }
-    return posts;
-  }
-
-  UserProfileData convertUserProfileFromJson(Map<String, dynamic> jsonData) {
-    List<PostData>? posts = convertPostsFromJson(jsonData['posts'] ?? []);
-
-    UserProfileData userProfileData = UserProfileData(
-      id: jsonData['userId'],
-      name: jsonData['name'],
-      email: jsonData['email'],
-      phone: jsonData['phone'],
-      avatarUrl: jsonData['avatarUrl'],
-      bio: jsonData['bio'],
-      posts: posts,
-      profileBackground: jsonData['profileBackground'],
-    );
-    return userProfileData;
   }
 
   Future<List<GroupData>?> searchGroup(String groupName) async {
@@ -228,48 +195,12 @@ class GeneralAPI {
     if (response.statusCode == 200) {
       List<dynamic> jsonData = response.data;
       List<GroupData> groups = jsonData.map((group) {
-        return convertGroupFromJson(group);
+        return GeneralConverter.convertGroupFromJson(group);
       }).toList();
 
       return groups;
     } else {
       return null;
     }
-  }
-
-  GroupData convertGroupFromJson(Map<String, dynamic> jsonData) {
-    List<GroupMemberData> members = (jsonData['members'] as List).map((member) {
-      return GroupMemberData(
-        id: member['id'],
-        name: member['name'],
-        avatarUrl: member['avatarUrl'],
-      );
-    }).toList();
-    List<GroupMemberData> admins = (jsonData['admins'] as List).map((admin) {
-      return GroupMemberData(
-        id: admin['id'],
-        name: admin['name'],
-        avatarUrl: admin['avatarUrl'],
-      );
-    }).toList();
-    GroupData groupData = GroupData(
-      id: jsonData['_id'],
-      name: jsonData['name'],
-      description: jsonData['description'],
-      bannerImgUrl: jsonData['bannerImgUrl'],
-      members: members,
-      admins: admins,
-      isMember: jsonData['isMember'] ?? false,
-    );
-    return groupData;
-  }
-
-  GroupMemberData convertGroupMemberFromJson(Map<String, dynamic> jsonData) {
-    GroupMemberData groupMemberData = GroupMemberData(
-      id: jsonData['id'],
-      name: jsonData['name'],
-      avatarUrl: jsonData['avatarUrl'],
-    );
-    return groupMemberData;
   }
 }
