@@ -147,7 +147,7 @@ class PostAndCommentInDetailedPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (avatarUrl != null)
+                if (avatarUrl != null && avatarUrl!.isNotEmpty)
                   CircleAvatar(
                     radius: _avatarSize / 2,
                     backgroundImage: NetworkImage(avatarUrl!),
@@ -155,9 +155,7 @@ class PostAndCommentInDetailedPage extends StatelessWidget {
                 else
                   CircleAvatar(
                     radius: _avatarSize / 2,
-                    backgroundColor: Colors.primaries[
-                        DateTime.now().microsecondsSinceEpoch %
-                            Colors.primaries.length],
+                    backgroundColor: Colors.green,
                   ),
                 const SizedBox(width: 8.0),
                 Column(

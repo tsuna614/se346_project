@@ -1,3 +1,5 @@
+import 'package:se346_project/src/api/groupAPI.dart';
+
 class UserProfileData {
   final String id;
   final String name;
@@ -135,8 +137,7 @@ class PostData {
   Future<String?> getGroupName() async {
     // Implementation to get group name
     if (groupId != null) {
-      //Todo : implement get group name
-      return "Normal group";
+      return GroupAPI().getGroupName(groupId!);
     }
     return null;
   }
@@ -182,6 +183,7 @@ class GroupData {
   final List<GroupMemberData>? admins;
   final List<String>? followers; // Assuming followers are just user IDs
   bool isMember; // To track if the current user is a member
+  bool isAdmin;
 
   GroupData({
     required this.id,
@@ -193,60 +195,31 @@ class GroupData {
     this.admins,
     this.followers,
     this.isMember = false,
+    this.isAdmin = false,
   });
 
   // Method to join the group
   Future<void> joinGroup() async {
-    // Implementation to join the group
-    isMember = true;
+    bool result = await GroupAPI().joinGroup(id);
+    if (result) {
+      isMember = true;
+    }
   }
 
   // Method to leave the group
   Future<void> leaveGroup() async {
-    // Implementation to leave the group
-    isMember = false;
+    bool result = await GroupAPI().leaveGroup(id);
+    if (result) {
+      isMember = false;
+    }
   }
 
   // Method to get group posts
   Future<List<PostData>> getGroupPosts() async {
     //Todo: implement get group posts
-    // Implementation to retrieve posts using postIds
-    // This could be fetching posts from a database or API
-    //Return 2 sample posts, 1 with img , and one with img and comment, use picsum
+    List<PostData> posts = await GroupAPI().getGroupPosts(id);
 
-    PostData post1 = PostData(
-      id: '1',
-      posterId: '1',
-      name: 'User 1',
-      content: 'This is a post with an image',
-      comments: [],
-      posterAvatarUrl: 'https://picsum.photos/200',
-      mediaUrl: 'https://picsum.photos/200',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-    PostData post2 = PostData(
-      id: '2',
-      posterId: '2',
-      name: 'User 2',
-      content: 'This is a post with an image and a comment',
-      comments: [
-        CommentData(
-          id: '1',
-          postId: '2',
-          commenterId: '1',
-          commenterName: 'User 1',
-          content: 'This is a comment',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        )
-      ],
-      posterAvatarUrl: 'https://picsum.photos/200',
-      mediaUrl: 'https://picsum.photos/200',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-    return [post1, post2];
+    return posts;
   }
 
   // Method to get member list

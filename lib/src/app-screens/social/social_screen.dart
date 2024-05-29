@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/app-screens/social/other_people_profile_screen.dart';
 import 'package:se346_project/src/widgets/groupPage.dart';
+import 'package:se346_project/src/widgets/addGroupScreen.dart';
 
 class SocialScreen extends StatefulWidget {
   final void Function() alternateDrawer;
@@ -18,18 +22,26 @@ class _SocialScreenState extends State<SocialScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _groupNameController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   final int limit = 7;
   int page = 1;
   int totalUsers = 0;
+  int _currentIndex = 0; // Track the currently selected tab index
   List<UserProfileData> _searchResults = [];
+  List<GroupData> _searchResultsGroup = [];
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _currentIndex = _tabController.index;
+      });
+    });
     _scrollController.addListener(_scrollListener);
   }
 
@@ -104,6 +116,26 @@ class _SocialScreenState extends State<SocialScreen>
           _buildGroupsTab(),
         ],
       ),
+      floatingActionButton: _currentIndex == 1 // Show FAB only on Groups tab
+          ? FloatingActionButton(
+              onPressed: () async {
+                final newGroup = await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CreateGroupScreen(),
+                  ),
+                );
+                if (newGroup != null) {
+                  // Add the new group to the list
+                  // This is a temporary implementation
+                  // setState(() {
+                  //   _searchResults.insert(0, newGroup);
+                  // });
+                }
+              },
+              child: Icon(Icons.add),
+              backgroundColor: Colors.green,
+            )
+          : null,
     );
   }
 
@@ -162,7 +194,6 @@ class _SocialScreenState extends State<SocialScreen>
   }
 
   Widget _buildGroupsTab() {
-    // Implement the group search functionality similar to the user search
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -178,7 +209,7 @@ class _SocialScreenState extends State<SocialScreen>
           ),
           SizedBox(height: 8.0),
           TextField(
-            controller: _searchController,
+            controller: _groupNameController,
             decoration: InputDecoration(
               hintText: 'Enter a group name or topic',
               border: OutlineInputBorder(),
@@ -186,39 +217,34 @@ class _SocialScreenState extends State<SocialScreen>
           ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: () {
-              // Add group search logic here
+            onPressed: () async {
+              setState(() {
+                _isLoading = true;
+              });
+              final results =
+                  await GeneralAPI().searchGroup(_groupNameController.text);
+
+              setState(() {
+                _isLoading = false;
+                _searchResultsGroup.clear();
+                if (results != null) {
+                  _searchResultsGroup = results;
+                }
+              });
             },
             child: Text('Search'),
           ),
           SizedBox(height: 16.0),
-          // Implement the group search results list here
           Expanded(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Column(
-                children: [
-                  GroupSearchResultItem(
-                    groupData: GroupData(
-                      id: '1',
-                      name: 'Group name',
-                      description:
-                          'This is a group AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-                      isMember: true,
-                    ),
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: _searchResultsGroup.length,
+                    itemBuilder: (context, index) {
+                      final group = _searchResultsGroup[index];
+                      return GroupSearchResultItem(groupData: group);
+                    },
                   ),
-                  GroupSearchResultItem(
-                    groupData: GroupData(
-                      id: '2',
-                      name: 'Group 2',
-                      description: 'This is another group',
-                      isMember: false,
-                      bannerImgUrl: "https://picsum.photos/200/300",
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),

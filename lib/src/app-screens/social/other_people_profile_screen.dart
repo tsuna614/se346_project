@@ -4,6 +4,7 @@ import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/data/types.dart';
+import 'package:se346_project/src/api/generalAPI.dart';
 
 class OtherProfile extends StatefulWidget {
   final UserProfileData profileData;
@@ -14,8 +15,20 @@ class OtherProfile extends StatefulWidget {
 }
 
 class _OtherProfileState extends State<OtherProfile> {
-  Future<UserProfileData> _loadUser() async {
-    return widget.profileData;
+  Future<UserProfileData?> _loadUser() async {
+    try {
+      if (widget.profileData.id != null) {
+        final UserProfileData? user =
+            await GeneralAPI().loadProfile(widget.profileData.id);
+        if (user != null) {
+          return user;
+        } else {
+          throw 'User not found';
+        }
+      }
+    } catch (e) {
+      throw e;
+    }
   }
 
   @override
@@ -61,16 +74,16 @@ class _OtherProfileState extends State<OtherProfile> {
                       Container(
                         height: 200,
                         width: double.infinity,
-                        //Add background profile image
+                        //If no background img is provided, make it transparent
                         decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: FadeInImage.memoryNetwork(
-                                    placeholder: kTransparentImage,
-                                    image: user.profileBackground!)
-                                .image,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                            color: Colors.green,
+                            image: user.profileBackground != null &&
+                                    user.profileBackground!.isNotEmpty
+                                ? DecorationImage(
+                                    image:
+                                        NetworkImage(user.profileBackground!),
+                                    fit: BoxFit.cover)
+                                : null),
 
                         child: ClipPath(
                           clipper: BezierClipper(),
@@ -112,7 +125,11 @@ class _OtherProfileState extends State<OtherProfile> {
                         ),
                       ),
 
-                      for (PostData post in user.posts!) Post(postData: post),
+                      if (user.posts != null)
+                        for (var post in user.posts!)
+                          Post(
+                            postData: post,
+                          ),
 
                       SizedBox(height: 20),
                       Center(

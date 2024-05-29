@@ -39,9 +39,11 @@ class _CommentItemState extends State<CommentItem> {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundImage: widget.comment.commenterAvatarUrl != null
-                          ? NetworkImage(widget.comment.commenterAvatarUrl!)
-                          : null,
+                      backgroundImage:
+                          widget.comment.commenterAvatarUrl != null &&
+                                  widget.comment.commenterAvatarUrl!.isNotEmpty
+                              ? NetworkImage(widget.comment.commenterAvatarUrl!)
+                              : null,
                       child: widget.comment.commenterAvatarUrl == null
                           ? Text(widget.comment.commenterName[0])
                           : null,
@@ -84,7 +86,8 @@ class _CommentItemState extends State<CommentItem> {
                         ),
                       ),
                       // Comment image
-                      if (widget.comment.mediaUrl != null)
+                      if (widget.comment.mediaUrl != null &&
+                          widget.comment.mediaUrl!.isNotEmpty)
                         Column(
                           children: [
                             SizedBox(height: 4.0),

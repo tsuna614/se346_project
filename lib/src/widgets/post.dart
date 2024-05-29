@@ -12,7 +12,7 @@ import 'package:se346_project/src/utils/convertTime.dart';
 
 const _avatarSize = 40.0;
 
-class Post extends StatelessWidget {
+class Post extends StatefulWidget {
   final PostData postData;
 
   const Post({
@@ -20,6 +20,11 @@ class Post extends StatelessWidget {
     required this.postData,
   });
 
+  @override
+  State<Post> createState() => _PostState();
+}
+
+class _PostState extends State<Post> {
   void onLike() {
     // Handle like action
   }
@@ -32,8 +37,8 @@ class Post extends StatelessWidget {
           create: (context) => CommentBloc(),
           child: DetailedPostPage(
               commentBloc: CommentBloc(),
-              comments: postData.comments,
-              postData: postData),
+              comments: widget.postData.comments,
+              postData: widget.postData),
         ),
       ),
     );
@@ -57,38 +62,37 @@ class Post extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (postData.posterAvatarUrl != null)
+                if (widget.postData.posterAvatarUrl != null &&
+                    widget.postData.posterAvatarUrl != "")
                   CircleAvatar(
                     radius: _avatarSize / 2,
                     //If img is null or "", use default color
-                    backgroundImage: postData.posterAvatarUrl!.isNotEmpty
-                        ? NetworkImage(postData.posterAvatarUrl!)
+                    backgroundImage: widget.postData.posterAvatarUrl!.isNotEmpty
+                        ? NetworkImage(widget.postData.posterAvatarUrl!)
                         : null,
                   )
                 else
                   CircleAvatar(
                     radius: _avatarSize / 2,
-                    backgroundColor: Colors.primaries[
-                        DateTime.now().microsecondsSinceEpoch %
-                            Colors.primaries.length],
+                    backgroundColor: Colors.green,
                   ),
                 const SizedBox(width: 8.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FutureBuilder<String?>(
-                      future: postData.getGroupName(),
+                      future: widget.postData.getGroupName(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text(postData.name);
+                          return Text(widget.postData.name);
                         } else if (snapshot.hasError) {
-                          return Text(postData.name);
+                          return Text(widget.postData.name);
                         } else {
                           final groupName = snapshot.data;
                           return RichText(
                             text: TextSpan(
-                              text: postData.name,
+                              text: widget.postData.name,
                               style: DefaultTextStyle.of(context).style,
                               children: groupName != null
                                   ? [
@@ -111,7 +115,7 @@ class Post extends StatelessWidget {
                       },
                     ),
                     Text(
-                      convertTime(postData.createdAt),
+                      convertTime(widget.postData.createdAt),
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],
@@ -122,11 +126,11 @@ class Post extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(postData.content),
-                if (postData.mediaUrl != null)
+                Text(widget.postData.content),
+                if (widget.postData.mediaUrl != null)
                   FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
-                    image: postData.mediaUrl!,
+                    image: widget.postData.mediaUrl!,
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: 200,
@@ -152,7 +156,7 @@ class Post extends StatelessWidget {
                     ),
                     const SizedBox(width: 4.0),
                     Text(
-                      '${postData.likes?.length ?? 0}',
+                      '${widget.postData.likes?.length ?? 0}',
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],
@@ -160,12 +164,12 @@ class Post extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${postData.comments.length} comments',
+                      '${widget.postData.comments.length} comments',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     const SizedBox(width: 8.0),
                     Text(
-                      '${postData.shares?.length ?? 0} shares',
+                      '${widget.postData.shares?.length ?? 0} shares',
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],

@@ -5,14 +5,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http; // For making HTTP requests
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:dio/dio.dart';
+import 'package:se346_project/src/api/groupAPI.dart';
 
 class AddPostScreen extends StatefulWidget {
   final String? groupId;
+  final String? groupName;
   final bool? shareMode;
   final String? sharePostId;
 
   const AddPostScreen(
-      {Key? key, this.groupId, this.shareMode, this.sharePostId})
+      {Key? key,
+      this.groupId,
+      this.shareMode,
+      this.sharePostId,
+      this.groupName})
       : super(key: key);
 
   @override
@@ -22,36 +28,13 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   final TextEditingController _contentController = TextEditingController();
   File? _selectedImage;
-  String? groupName;
+
   bool _isAddingPost = false; // Track loading state
 
   @override
   void initState() {
     super.initState();
-    if (widget.groupId != null) {
-      getGroupName(widget.groupId!);
-    }
-  }
-
-  void getGroupName(String groupId) async {
-    if (groupId == null)
-      return;
-    else
-      groupName = "Group Name XX";
-    // try {
-    //   final response =
-    //       await http.get(Uri.parse('your_group_name_api_endpoint/$groupId'));
-    //   if (response.statusCode == 200) {
-    //     final jsonData = json.decode(response.body);
-    //     setState(() {
-    //       groupName = jsonData['name'];
-    //     });
-    //   } else {
-    //     throw Exception('Failed to load group name');
-    //   }
-    // } catch (e) {
-    //   print('Error fetching group name: $e');
-    // }
+    if (widget.groupId != null) {}
   }
 
   void _getImage() async {
@@ -68,7 +51,32 @@ class _AddPostScreenState extends State<AddPostScreen> {
     setState(() {
       _isAddingPost = true; // Start loading
     });
+    if (_contentController.text.isEmpty) {
+      setState(() {
+        _isAddingPost = false; // Stop loading
+      });
+      return;
+    }
 
+    if (widget.groupId != null) {
+      final result = await GroupAPI().postToGroup(
+        widget.groupId!,
+        _contentController.text,
+        _selectedImage != null ? _selectedImage : null,
+      );
+
+      setState(() {
+        _isAddingPost = false; // Stop loading
+      });
+
+      if (result != null) {
+        Navigator.pop(context, true); // Indicate success
+      }
+
+      return; // Ensure we don't continue to the wall posting logic
+    }
+
+    //This is for wall posting
     final result = await GeneralAPI().addPostToWall(
       _contentController.text,
       _selectedImage != null ? _selectedImage : null,
@@ -89,7 +97,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Post${groupName != null ? ' to $groupName' : ''}',
+          'Add Post${widget.groupName != null ? ' to ${widget.groupName}' : ''}',
           style: TextStyle(
             color: Colors.green,
             fontSize: 20.0,

@@ -5,7 +5,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:se346_project/src/widgets/addPostScreen.dart';
 
-class GroupPage extends StatelessWidget {
+class GroupPage extends StatefulWidget {
   final GroupData groupData;
 
   const GroupPage({
@@ -13,23 +13,42 @@ class GroupPage extends StatelessWidget {
     required this.groupData,
   });
 
-  void onJoinGroup() {
-    // Handle join group action
-    groupData.joinGroup();
+  @override
+  _GroupPageState createState() => _GroupPageState();
+}
+
+class _GroupPageState extends State<GroupPage> {
+  late GroupData groupData;
+
+  @override
+  void initState() {
+    super.initState();
+    groupData = widget.groupData;
   }
 
-  void onQuitGroup() {
-    // Handle quit group action
-    groupData.leaveGroup();
+  void onJoinGroup() async {
+    await groupData.joinGroup();
+    setState(() {
+      // Refresh the UI after joining the group
+    });
+  }
+
+  void onQuitGroup(BuildContext context) async {
+    await groupData.leaveGroup();
+    Navigator.pop(context);
   }
 
   void onAddPost(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddPostScreen(groupId: groupData.id),
+        builder: (context) =>
+            AddPostScreen(groupId: groupData.id, groupName: groupData.name),
       ),
     );
+    setState(() {
+      // Refresh the UI after adding a post
+    });
   }
 
   @override
@@ -103,7 +122,7 @@ class GroupPage extends StatelessWidget {
                     ),
                   if (groupData.isMember)
                     ElevatedButton(
-                      onPressed: onQuitGroup,
+                      onPressed: () => onQuitGroup(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         padding: EdgeInsets.symmetric(
@@ -115,7 +134,6 @@ class GroupPage extends StatelessWidget {
                 ],
               ),
             ),
-            //Some divider
             Divider(
               thickness: 1.0,
               color: Colors.grey[300],
