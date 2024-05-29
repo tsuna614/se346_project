@@ -21,15 +21,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() async {
     try {
-      auth.signInWithEmailAndPassword(
-        email: _emailTextController.text,
-        password: _passwordTextController.text,
-      );
+      if (_loginForm.currentState!.validate()) {
+        await auth.signInWithEmailAndPassword(
+          email: _emailTextController.text,
+          password: _passwordTextController.text,
+        );
+      }
     } on FirebaseAuthException catch (err) {
       ScaffoldMessenger.of(context).clearSnackBars();
+      String errorMessage = 'An error occurred';
+      if (err.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (err.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user.';
+      } else if (err.code == 'invalid-email') {
+        errorMessage = 'The email address is badly formatted.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(err.message.toString()),
+          content: Text(errorMessage),
         ),
       );
     }
