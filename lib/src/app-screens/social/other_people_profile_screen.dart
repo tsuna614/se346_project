@@ -69,50 +69,53 @@ class _OtherProfileState extends State<OtherProfile> {
                                         NetworkImage(user.profileBackground!),
                                     fit: BoxFit.cover)
                                 : null),
-                        child: ClipPath(
-                          clipper: OtherPeopleProfileBezierClipper(),
-                          child: Column(
-                            children: <Widget>[
-                              CircleAvatar(
-                                radius: 50,
-                                backgroundImage: user.avatarUrl != null &&
-                                        user.avatarUrl!.isNotEmpty
-                                    ? NetworkImage(user.avatarUrl!)
-                                    : null,
+                        child: Column(
+                          children: [
+                            ClipPath(
+                              clipper: OtherPeopleProfileBezierClipper(),
+                              child: Column(
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    radius: 50,
+                                    backgroundImage: user.avatarUrl != null &&
+                                            user.avatarUrl!.isNotEmpty
+                                        ? NetworkImage(user.avatarUrl!)
+                                        : null,
+                                  ),
+                                ],
                               ),
-                              Text(user.name,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(user.bio ?? '',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.normal)),
-                              SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: _loadingFollow
-                                    ? null
-                                    : () async {
-                                        setState(() {
-                                          _loadingFollow = true;
-                                        });
-                                        bool isNowFollowing =
-                                            await user.toggleFollow();
-                                        setState(() {
-                                          _loadingFollow = false;
-                                          user.isFollowing = isNowFollowing;
-                                        });
-                                      },
-                                child: _loadingFollow
-                                    ? CircularProgressIndicator()
-                                    : Text(user.isFollowing
-                                        ? 'Unfollow'
-                                        : 'Follow'),
-                              ),
-                            ],
-                          ),
+                            ),
+                            Text(user.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold)),
+                            Text(user.bio ?? '',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.normal)),
+                            SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: _loadingFollow
+                                  ? null
+                                  : () async {
+                                      setState(() {
+                                        _loadingFollow = true;
+                                      });
+                                      bool isNowFollowing =
+                                          await user.toggleFollow();
+                                      setState(() {
+                                        _loadingFollow = false;
+                                        user.isFollowing = isNowFollowing;
+                                      });
+                                    },
+                              child: _loadingFollow
+                                  ? CircularProgressIndicator()
+                                  : Text(
+                                      user.isFollowing ? 'Unfollow' : 'Follow'),
+                            ),
+                          ],
                         ),
                       ),
                       // Posts label

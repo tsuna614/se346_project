@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/widgets/post.dart';
+import 'package:se346_project/src/widgets/sharedPost.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/widgets/addPostScreen.dart';
@@ -24,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _profileFuture = GeneralAPI().loadCurrentUserProfile();
   }
 
-  void _refreshProfile() {
+  void _refreshProfile() async {
     setState(() {
       _profileFuture = GeneralAPI().loadCurrentUserProfile();
     });
@@ -72,6 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 } else {
                   UserProfileData user = snapshot.data as UserProfileData;
+                  print('user is poster? ${user.posts?.first.userIsPoster}');
                   return Column(
                     children: <Widget>[
                       Container(
@@ -89,32 +91,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        child: ClipPath(
-                          clipper: BezierClipper(),
-                          child: Column(
-                            children: <Widget>[
-                              CircleAvatar(
-                                radius: 50,
-                                backgroundImage: user.avatarUrl != null &&
-                                        user.avatarUrl!.isNotEmpty
-                                    ? FadeInImage.memoryNetwork(
-                                            placeholder: kTransparentImage,
-                                            image: user.avatarUrl!)
-                                        .image
-                                    : MemoryImage(kTransparentImage),
+                        child: Column(
+                          children: [
+                            ClipPath(
+                              clipper: BezierClipper(),
+                              child: Column(
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    radius: 50,
+                                    backgroundImage: user.avatarUrl != null &&
+                                            user.avatarUrl!.isNotEmpty
+                                        ? FadeInImage.memoryNetwork(
+                                                placeholder: kTransparentImage,
+                                                image: user.avatarUrl!)
+                                            .image
+                                        : MemoryImage(kTransparentImage),
+                                  ),
+                                ],
                               ),
-                              Text(user.name,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(user.bio ?? '',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.normal)),
-                            ],
-                          ),
+                            ),
+                            Text(user.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold)),
+                            Text(user.bio ?? '',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.normal)),
+                            Text(
+                              'Followers: ${user.followers?.length ?? 0}',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ],
                         ),
                       ),
                       Padding(
@@ -149,6 +162,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Post(
                             postData: post,
                           ),
+                      //Test shared post widget
+
                       SizedBox(height: 20),
                       Center(
                         child: Text('No more posts available',

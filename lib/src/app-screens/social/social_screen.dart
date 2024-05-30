@@ -295,7 +295,17 @@ class _SocialFriendItemState extends State<SocialFriendItem> {
         margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: ListTile(
           leading: CircleAvatar(
-            child: Icon(Icons.person),
+            child: ClipOval(
+              child: widget.profileData.avatarUrl != null &&
+                      widget.profileData.avatarUrl!.isNotEmpty
+                  ? Image.network(
+                      widget.profileData.avatarUrl!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    )
+                  : Icon(Icons.person),
+            ),
           ),
           title: Text(widget.profileData.name),
           subtitle: Text(widget.profileData.email),
