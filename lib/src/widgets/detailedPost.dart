@@ -27,6 +27,7 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
   @override
   void initState() {
     super.initState();
+    reloadComments();
   }
 
   Future<void> reloadComments() async {
@@ -35,6 +36,12 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
       _comments = comments;
       widget.postData.comments = comments;
     });
+  }
+
+  Future<void> onShare() async {
+    await widget.postData.sharePost();
+
+    setState(() {}); // Update UI to reflect the share
   }
 
   @override
@@ -60,6 +67,7 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
               postData: widget.postData,
               comments: _comments,
               onCommentAdded: reloadComments,
+              onShare: onShare,
             ),
             // Add some spacing
           ],
@@ -97,6 +105,7 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
 
   @override
   void dispose() {
+    _commentController.dispose();
     super.dispose();
   }
 }
@@ -105,12 +114,14 @@ class PostAndCommentInDetailedPage extends StatefulWidget {
   final PostData postData;
   final List<CommentData> comments;
   final Function onCommentAdded;
+  final Function onShare;
 
   PostAndCommentInDetailedPage({
     Key? key,
     required this.postData,
     required this.comments,
     required this.onCommentAdded,
+    required this.onShare,
   }) : super(key: key);
 
   @override
@@ -122,12 +133,7 @@ class _PostAndCommentInDetailedPageState
     extends State<PostAndCommentInDetailedPage> {
   void onLike() async {
     await widget.postData.likePost();
-
     setState(() {});
-  }
-
-  void onShare() {
-    // Handle share action
   }
 
   @override
@@ -170,6 +176,102 @@ class _PostAndCommentInDetailedPageState
               ],
             ),
             const SizedBox(height: 8.0),
+            //Check shared post
+            if (widget.postData.sharePostId != null)
+              FutureBuilder<PostData?>(
+                future: widget.postData.fetchSharedPost(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error loading shared post'),
+                    );
+                  } else if (snapshot.data != null) {
+                    PostData sharedPost = snapshot.data!;
+                    return Card(
+                      color: Colors.grey[100],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                if (sharedPost.posterAvatarUrl != null &&
+                                    sharedPost.posterAvatarUrl != "")
+                                  CircleAvatar(
+                                    radius: _avatarSize / 2,
+                                    child: ClipOval(
+                                      child: FadeInImage.memoryNetwork(
+                                        placeholder: kTransparentImage,
+                                        image: sharedPost.posterAvatarUrl!,
+                                        fit: BoxFit.cover,
+                                        width: _avatarSize,
+                                        height: _avatarSize,
+                                        imageErrorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Container(
+                                            width: _avatarSize,
+                                            height: _avatarSize,
+                                            color: Colors.grey,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  CircleAvatar(
+                                    radius: _avatarSize / 2,
+                                    child: Icon(Icons.person),
+                                  ),
+                                const SizedBox(width: 8.0),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(sharedPost.name),
+                                    Text(
+                                      convertTime(sharedPost.createdAt),
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text(sharedPost.content),
+                            if (sharedPost.mediaUrl != null)
+                              FadeInImage.memoryNetwork(
+                                placeholder: kTransparentImage,
+                                image: sharedPost.mediaUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 200,
+                                imageErrorBuilder:
+                                    (context, error, stackTrace) {
+                                  return Container(
+                                    width: double.infinity,
+                                    height: 200,
+                                    color: Colors.grey[300],
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                },
+              ),
+
             Column(
               children: [
                 Align(
@@ -177,7 +279,8 @@ class _PostAndCommentInDetailedPageState
                   child:
                       Text(widget.postData.content, textAlign: TextAlign.left),
                 ),
-                if (widget.postData.mediaUrl != null)
+                if (widget.postData.mediaUrl != null &&
+                    widget.postData.mediaUrl!.isNotEmpty)
                   FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
                     image: widget.postData.mediaUrl!,
@@ -260,7 +363,33 @@ class _PostAndCommentInDetailedPageState
                         children: [
                           IconButton(
                             icon: const Icon(Icons.share),
-                            onPressed: onShare,
+                            onPressed: () async {
+                              final result = await showDialog<bool>(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Share post'),
+                                    content: Text(
+                                        'Are you sure you want to share this post?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: Text('Share'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              if (result == true) {
+                                widget.onShare();
+                              }
+                            },
                           ),
                           Text('Share'),
                         ],

@@ -7,14 +7,32 @@ import 'package:se346_project/src/api/postAPI.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:se346_project/src/data/types.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final void Function() alternateDrawer;
   final String appName;
 
   HomeScreen({Key? key, required this.alternateDrawer, required this.appName})
       : super(key: key);
 
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final auth = FirebaseAuth.instance;
+  late Future<List<PostData>> _postsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _postsFuture = PostAPI().loadHomePosts();
+  }
+
+  void refresh() {
+    setState(() {
+      _postsFuture = PostAPI().loadHomePosts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +44,7 @@ class HomeScreen extends StatelessWidget {
             SliverAppBar(
               leading: IconButton(
                 icon: Icon(Icons.menu, color: Colors.green),
-                onPressed: alternateDrawer,
+                onPressed: widget.alternateDrawer,
               ),
               //Use the variable appName to display the app name
               title: const Text('Notfacebook',
@@ -39,7 +57,7 @@ class HomeScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: FutureBuilder(
-                future: PostAPI().loadHomePosts(),
+                future: _postsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -63,6 +81,7 @@ class HomeScreen extends StatelessWidget {
                         for (var post in jsonData)
                           Post(
                             postData: post,
+                            refreshPreviousScreen: refresh,
                           ),
                       ]);
                   }

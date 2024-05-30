@@ -14,12 +14,11 @@ const _avatarSize = 40.0;
 
 class Post extends StatefulWidget {
   PostData postData;
+  //refresh function for parent widget
+  final void Function()? refreshPreviousScreen;
 
-  Post({
-    super.key,
-    required this.postData,
-  });
-
+  Post({Key? key, required this.postData, this.refreshPreviousScreen})
+      : super(key: key);
   @override
   State<Post> createState() => _PostState();
 }
@@ -49,8 +48,61 @@ class _PostState extends State<Post> {
     );
   }
 
-  void onShare() {
-    // Handle share action
+  void onShare() async {
+    await widget.postData.sharePost();
+    // Show snackbar
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Post shared'),
+      ),
+    );
+  }
+
+  void onDelete() async {
+    //Show confirmation dialog then delete
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete post'),
+          content: Text('Are you sure you want to delete this post?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      // Logic for deleting the post
+      await widget.postData.deletePost();
+      // Refresh parent widget
+      if (widget.refreshPreviousScreen != null) {
+        widget.refreshPreviousScreen!();
+      }
+    }
+  }
+
+  void onReport() async {
+    // Logic for reporting the post
+    await widget.postData.reportPost();
+    // Show snackbar
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Post reported'),
+      ),
+    );
   }
 
   @override
@@ -137,6 +189,31 @@ class _PostState extends State<Post> {
                     ),
                   ],
                 ),
+                Spacer(),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      onDelete();
+                    } else if (value == 'report') {
+                      onReport();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return widget.postData.userIsPoster == true
+                        ? [
+                            PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Text('Delete Post'),
+                            ),
+                          ]
+                        : [
+                            PopupMenuItem<String>(
+                              value: 'report',
+                              child: Text('Report Post'),
+                            ),
+                          ];
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 8.0),
@@ -144,7 +221,8 @@ class _PostState extends State<Post> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.postData.content),
-                if (widget.postData.mediaUrl != null)
+                if (widget.postData.mediaUrl != null &&
+                    widget.postData.mediaUrl != "")
                   FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
                     image: widget.postData.mediaUrl!,
@@ -316,10 +394,39 @@ class _PostState extends State<Post> {
                 ),
                 Row(
                   children: [
-                    if (widget.postData.groupId == null)
+                    if (widget.postData.groupId == null &&
+                        widget.postData.sharePostId == null &&
+                        widget.postData.userIsPoster != true)
                       IconButton(
                         icon: const Icon(Icons.share),
-                        onPressed: onShare,
+                        // Show confirmation dialog then share
+                        onPressed: () async {
+                          final result = await showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Share post'),
+                                content: Text(
+                                    'Are you sure you want to share this post?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, true),
+                                    child: Text('Share'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          if (result == true) {
+                            onShare();
+                          }
+                        },
                       ),
                     SizedBox(
                       width: 8,

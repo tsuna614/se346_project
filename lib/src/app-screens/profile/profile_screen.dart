@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/widgets/post.dart';
-import 'package:se346_project/src/widgets/sharedPost.dart';
+
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/widgets/addPostScreen.dart';
@@ -161,9 +161,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         for (var post in user.posts!)
                           Post(
                             postData: post,
+                            refreshPreviousScreen: _refreshProfile,
                           ),
-                      //Test shared post widget
-
                       SizedBox(height: 20),
                       Center(
                         child: Text('No more posts available',

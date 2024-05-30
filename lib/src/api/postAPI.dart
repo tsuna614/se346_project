@@ -32,6 +32,48 @@ class PostAPI {
     }
   }
 
+  Future<bool> deletePost(String postId) async {
+    if (postId.isEmpty) {
+      return false;
+    }
+    try {
+      final res = await dio.delete('$baseUrl/post/$postId',
+          data: {'userId': _firebase.currentUser!.uid});
+      return res.statusCode == 200;
+    } catch (e) {
+      print("Error removing post: $e");
+      return false;
+    }
+  }
+
+  Future<bool> sharePost(String postId) async {
+    if (postId.isEmpty) {
+      return false;
+    }
+    try {
+      final res = await dio.post('$baseUrl/post/sharePost',
+          data: {'userId': _firebase.currentUser!.uid, 'postId': postId});
+      return res.statusCode == 200;
+    } catch (e) {
+      print("Error sharing post: $e");
+      return false;
+    }
+  }
+
+  Future<PostData?> getPost(String postId) async {
+    if (postId.isEmpty) {
+      return null;
+    }
+    try {
+      final res = await dio.get('$baseUrl/post/$postId',
+          queryParameters: {'userId': _firebase.currentUser!.uid});
+      return PostData.fromJson(res.data);
+    } catch (e) {
+      print("Error getting post: $e");
+      throw e;
+    }
+  }
+
   Future<bool> commentPost(String postId, String content, File? media) async {
     if (postId.isEmpty || content.isEmpty) {
       return false;

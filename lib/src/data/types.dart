@@ -90,29 +90,10 @@ class PostData {
     this.userLiked,
   });
   Future<PostData?> fetchSharedPost() async {
-    // Implement the logic to fetch the shared post data using sharePostId.
-    // This is a placeholder function and should be replaced with actual data fetching logic.
-    return Future.delayed(Duration(seconds: 2), () {
-      // Simulating a network call
-      return PostData(
-        id: 'shared_post_id',
-        posterId: 'shared_poster_id',
-        name: 'Shared Poster Name',
-        content: 'This is the content of the shared post.',
-        comments: [],
-        likes: [],
-        shares: [],
-        posterAvatarUrl: null,
-        mediaUrl: null,
-        groupId: null,
-        sharePostId: null,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        userIsPoster: false,
-        userLiked: false,
-        isEdited: false,
-      );
-    });
+    if (sharePostId != null) {
+      return PostAPI().getPost(sharePostId!);
+    }
+    return null;
   }
 
   Future<void> likePost() async {
@@ -160,8 +141,9 @@ class PostData {
     // Implementation to unlike the post
   }
 
-  Future<void> deletePost() async {
+  Future<bool> deletePost() async {
     // Implementation to delete the post
+    return PostAPI().deletePost(id);
   }
 
   Future<void> reportPost() async {
@@ -169,7 +151,7 @@ class PostData {
   }
 
   Future<void> sharePost() async {
-    // Implementation to share the post
+    await PostAPI().sharePost(id);
   }
 
   Future<GroupData> getGroup() async {
