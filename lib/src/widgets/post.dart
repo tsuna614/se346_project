@@ -25,8 +25,15 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  void onLike() {
-    // Handle like action
+  bool _isLoading = false;
+  void onLike() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await widget.postData.likePost();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void onComment(BuildContext context) {
@@ -36,9 +43,7 @@ class _PostState extends State<Post> {
         builder: (context) => BlocProvider<CommentBloc>(
           create: (context) => CommentBloc(),
           child: DetailedPostPage(
-              commentBloc: CommentBloc(),
-              comments: widget.postData.comments,
-              postData: widget.postData),
+              commentBloc: CommentBloc(), postData: widget.postData),
         ),
       ),
     );
@@ -153,6 +158,9 @@ class _PostState extends State<Post> {
                     Icon(
                       Icons.thumb_up,
                       size: 16.0,
+                      color: widget.postData.userLiked ?? false
+                          ? Colors.blue
+                          : Colors.grey,
                     ),
                     const SizedBox(width: 4.0),
                     Text(

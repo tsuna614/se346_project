@@ -167,6 +167,7 @@ class _GroupPageState extends State<GroupPage> {
       ),
       floatingActionButton: groupData.isMember
           ? FloatingActionButton(
+              heroTag: null,
               onPressed: () => onAddPost(context),
               child: Icon(Icons.add),
             )

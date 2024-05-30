@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
 import 'package:se346_project/src/widgets/post.dart';
-import 'package:transparent_image/transparent_image.dart';
-import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
+import 'package:se346_project/src/data/types.dart';
 
 class OtherProfile extends StatefulWidget {
-  final UserProfileData profileData;
-  const OtherProfile({super.key, required this.profileData});
+  final String uid;
+  const OtherProfile({required this.uid});
 
   @override
   State<OtherProfile> createState() => _OtherProfileState();
@@ -17,19 +15,14 @@ class OtherProfile extends StatefulWidget {
 class _OtherProfileState extends State<OtherProfile> {
   Future<UserProfileData?> _loadUser() async {
     try {
-      if (widget.profileData.id != null) {
-        final UserProfileData? user =
-            await GeneralAPI().loadProfile(widget.profileData.id);
-        if (user != null) {
-          return user;
-        } else {
-          throw 'User not found';
-        }
-      }
+      final user = await GeneralAPI().loadOtherProfile(widget.uid);
+      return user;
     } catch (e) {
       throw e;
     }
   }
+
+  bool _loadingFollow = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +37,6 @@ class _OtherProfileState extends State<OtherProfile> {
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold)),
             floating: true,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.edit, color: Colors.green),
-                onPressed: () {
-                  //Todo implement edit profile
-                },
-              ),
-            ],
             expandedHeight: 50.0,
           ),
           SliverToBoxAdapter(
@@ -72,9 +57,9 @@ class _OtherProfileState extends State<OtherProfile> {
                   return Column(
                     children: <Widget>[
                       Container(
-                        height: 200,
+                        height: 250,
                         width: double.infinity,
-                        //If no background img is provided, make it transparent
+                        // If no background img is provided, make it transparent
                         decoration: BoxDecoration(
                             color: Colors.green,
                             image: user.profileBackground != null &&
@@ -84,17 +69,16 @@ class _OtherProfileState extends State<OtherProfile> {
                                         NetworkImage(user.profileBackground!),
                                     fit: BoxFit.cover)
                                 : null),
-
                         child: ClipPath(
-                          clipper: BezierClipper(),
+                          clipper: OtherPeopleProfileBezierClipper(),
                           child: Column(
                             children: <Widget>[
                               CircleAvatar(
                                 radius: 50,
-                                backgroundImage: FadeInImage.memoryNetwork(
-                                        placeholder: kTransparentImage,
-                                        image: user.avatarUrl ?? '')
-                                    .image,
+                                backgroundImage: user.avatarUrl != null &&
+                                        user.avatarUrl!.isNotEmpty
+                                    ? NetworkImage(user.avatarUrl!)
+                                    : null,
                               ),
                               Text(user.name,
                                   style: TextStyle(
@@ -106,11 +90,32 @@ class _OtherProfileState extends State<OtherProfile> {
                                       color: Colors.white,
                                       fontSize: 15.0,
                                       fontWeight: FontWeight.normal)),
+                              SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: _loadingFollow
+                                    ? null
+                                    : () async {
+                                        setState(() {
+                                          _loadingFollow = true;
+                                        });
+                                        bool isNowFollowing =
+                                            await user.toggleFollow();
+                                        setState(() {
+                                          _loadingFollow = false;
+                                          user.isFollowing = isNowFollowing;
+                                        });
+                                      },
+                                child: _loadingFollow
+                                    ? CircularProgressIndicator()
+                                    : Text(user.isFollowing
+                                        ? 'Unfollow'
+                                        : 'Follow'),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      //Posts label
+                      // Posts label
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -124,16 +129,14 @@ class _OtherProfileState extends State<OtherProfile> {
                           ],
                         ),
                       ),
-
                       if (user.posts != null)
                         for (var post in user.posts!)
                           Post(
                             postData: post,
                           ),
-
                       SizedBox(height: 20),
                       Center(
-                        child: Text('No more post available',
+                        child: Text('No more posts available',
                             style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 15.0,
@@ -149,4 +152,20 @@ class _OtherProfileState extends State<OtherProfile> {
       ),
     );
   }
+}
+
+class OtherPeopleProfileBezierClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height - 50);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height - 50);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

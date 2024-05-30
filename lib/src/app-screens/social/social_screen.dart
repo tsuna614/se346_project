@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
+import 'package:se346_project/src/api/groupAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/app-screens/social/other_people_profile_screen.dart';
 import 'package:se346_project/src/widgets/groupPage.dart';
@@ -118,6 +119,7 @@ class _SocialScreenState extends State<SocialScreen>
       ),
       floatingActionButton: _currentIndex == 1 // Show FAB only on Groups tab
           ? FloatingActionButton(
+              heroTag: null,
               onPressed: () async {
                 final newGroup = await Navigator.of(context).push(
                   MaterialPageRoute(
@@ -125,11 +127,18 @@ class _SocialScreenState extends State<SocialScreen>
                   ),
                 );
                 if (newGroup != null) {
-                  // Add the new group to the list
-                  // This is a temporary implementation
-                  // setState(() {
-                  //   _searchResults.insert(0, newGroup);
-                  // });
+                  //call search group again to refresh the list
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  final results = await GroupAPI().searchGroup('');
+                  setState(() {
+                    _isLoading = false;
+                    _searchResultsGroup.clear();
+                    if (results != null) {
+                      _searchResultsGroup = results;
+                    }
+                  });
                 }
               },
               child: Icon(Icons.add),
@@ -222,7 +231,7 @@ class _SocialScreenState extends State<SocialScreen>
                 _isLoading = true;
               });
               final results =
-                  await GeneralAPI().searchGroup(_groupNameController.text);
+                  await GroupAPI().searchGroup(_groupNameController.text);
 
               setState(() {
                 _isLoading = false;
@@ -252,19 +261,35 @@ class _SocialScreenState extends State<SocialScreen>
   }
 }
 
-class SocialFriendItem extends StatelessWidget {
+//Used in search results
+class SocialFriendItem extends StatefulWidget {
   final UserProfileData profileData;
 
-  const SocialFriendItem({Key? key, required this.profileData})
-      : super(key: key);
+  SocialFriendItem({Key? key, required this.profileData}) : super(key: key);
+
+  @override
+  State<SocialFriendItem> createState() => _SocialFriendItemState();
+}
+
+class _SocialFriendItemState extends State<SocialFriendItem> {
+  bool loadingFollow = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => OtherProfile(profileData: profileData),
-        ));
+        if (loadingFollow) return;
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OtherProfile(uid: widget.profileData.id),
+          ),
+        );
       },
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -272,13 +297,21 @@ class SocialFriendItem extends StatelessWidget {
           leading: CircleAvatar(
             child: Icon(Icons.person),
           ),
-          title: Text(profileData.name),
-          subtitle: Text(profileData.email),
+          title: Text(widget.profileData.name),
+          subtitle: Text(widget.profileData.email),
           trailing: ElevatedButton(
-            onPressed: () {
-              //Todo Action when adding friend
+            onPressed: () async {
+              setState(() {
+                loadingFollow = true;
+              });
+              bool result = await widget.profileData.toggleFollow();
+              setState(() {
+                loadingFollow = false;
+              });
             },
-            child: Text('Follow'),
+            child: loadingFollow
+                ? CircularProgressIndicator()
+                : Text(widget.profileData.isFollowing ? 'Unfollow' : 'Follow'),
           ),
         ),
       ),

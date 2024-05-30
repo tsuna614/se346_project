@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/api/groupAPI.dart';
+import 'package:se346_project/src/api/postAPI.dart';
 
 class UserProfileData {
   final String id;
@@ -9,10 +12,12 @@ class UserProfileData {
   final String? bio;
   final List<PostData>? posts;
   final String? profileBackground;
-  final List<String>? followers;
+  List<String>? followers;
+  bool isFollowing;
   //Created at / updated at
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final bool? isCurrentUser;
   UserProfileData(
       {required this.id,
       required this.name,
@@ -24,40 +29,23 @@ class UserProfileData {
       this.profileBackground,
       this.followers,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      this.isFollowing = false,
+      this.isCurrentUser = false});
+
+  Future<bool> toggleFollow() async {
+    bool following = await GeneralAPI().toggleFollow(id);
+    if (following) {
+      isFollowing = !isFollowing;
+    }
+
+    return following;
+  }
 }
 
 //Same as user profile data, all user wall posts are public and can be viewed by anyone
 //Only check if they are following the user to view their profile
 // Returned for search results
-class OtherPeopleProfileData {
-  final String id;
-  final String name;
-  final String? bio;
-  final String? phone;
-  final String? email;
-  final List<PostData>? posts;
-  final String? avatarUrl;
-  final String? profileBackground;
-  final String? followers;
-  final bool? isFollowing;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  OtherPeopleProfileData({
-    required this.id,
-    required this.name,
-    this.bio,
-    this.phone,
-    this.email,
-    this.posts,
-    this.avatarUrl,
-    this.profileBackground,
-    this.isFollowing,
-    this.followers,
-    this.createdAt,
-    this.updatedAt,
-  });
-}
 
 //Returned on home
 //Can query group name if post is in a group
@@ -79,7 +67,7 @@ class PostData {
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool? userIsPoster;
-  final bool? userLiked;
+  bool? userLiked;
   final bool isEdited;
 
   PostData({
@@ -101,16 +89,17 @@ class PostData {
     this.userLiked,
   });
 
-  Future<void> addComment(CommentData comment) async {
-    // Implementation to add a comment
-  }
-
-  Future<void> deleteComment(String commentId) async {
-    // Implementation to delete a comment
-  }
-
   Future<void> likePost() async {
-    // Implementation to like the post
+    bool isLiked = await PostAPI().toggleLikePost(id);
+    userLiked = isLiked;
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    if (isLiked) {
+      likes?.add(currentUserId);
+    } else {
+      likes?.remove(currentUserId);
+    }
+
+    print('Post liked: $isLiked');
   }
 
   Future<void> unlikePost() async {
@@ -142,10 +131,41 @@ class PostData {
     return null;
   }
 
-  Future<OtherPeopleProfileData> getPosterProfile() async {
+  Future<UserProfileData> getPosterProfile() async {
     // Implementation to get poster profile
-    return OtherPeopleProfileData(
-        id: '', name: '', createdAt: DateTime.now(), updatedAt: DateTime.now());
+    return UserProfileData(
+      id: posterId,
+      name: name,
+      email: '',
+    );
+  }
+
+  static Future<PostData> fromJson(Map<String, dynamic> json) async {
+    List<CommentData> comments = [];
+    List<String> likes = (json['likes'] as List).map((like) {
+      return like as String;
+    }).toList();
+    List<String> shares = (json['shares'] as List).map((share) {
+      return share as String;
+    }).toList();
+    PostData postData = PostData(
+      id: json['_id'],
+      posterId: json['posterId'],
+      name: json['name'],
+      likes: likes,
+      shares: shares,
+      content: json['content'],
+      comments: comments,
+      mediaUrl: json['mediaUrl'],
+      sharePostId: json['sharePostId'],
+      groupId: json['groupId'],
+      posterAvatarUrl: json['posterAvatarUrl'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      userLiked: json['userLiked'] ?? false,
+      userIsPoster: json['userIsPoster'] ?? false,
+    );
+    return postData;
   }
 }
 
@@ -159,7 +179,7 @@ class CommentData {
   final String? mediaUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
-
+  bool isCommenter; // To track if the current user is the commenter
   CommentData({
     required this.id,
     required this.postId,
@@ -170,7 +190,22 @@ class CommentData {
     required this.updatedAt,
     this.commenterAvatarUrl,
     this.mediaUrl,
+    this.isCommenter = false,
   });
+
+  static fromJson(Map<String, dynamic> json) {
+    return CommentData(
+      id: json['_id'],
+      postId: json['postId'],
+      commenterId: json['commenterId'],
+      commenterName: json['commenterName'],
+      content: json['content'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      commenterAvatarUrl: json['commenterAvatarUrl'],
+      isCommenter: json['isCommenter'] ?? false,
+    );
+  }
 }
 
 class GroupData {

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
+import 'package:se346_project/src/api/postAPI.dart';
 
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:se346_project/src/data/types.dart';
@@ -38,7 +39,7 @@ class HomeScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: FutureBuilder(
-                future: GeneralAPI().loadHomePosts(),
+                future: PostAPI().loadHomePosts(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(

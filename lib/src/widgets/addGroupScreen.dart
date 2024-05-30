@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
+import 'package:se346_project/src/api/groupAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 
 class CreateGroupScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     });
     final groupname = _nameController.text;
     final groupDescription = _descriptionController.text;
-    await GeneralAPI()
+    await GroupAPI()
         .createGroup(groupname, groupDescription, _selectedBannerImage);
 
     setState(() {
