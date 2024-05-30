@@ -9,12 +9,10 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 const _avatarSize = 40.0;
 
 class DetailedPostPage extends StatefulWidget {
-  final CommentBloc commentBloc;
-  final PostData postData; // Pass the original post data here
+  PostData postData; // Pass the original post data here
 
-  const DetailedPostPage({
+  DetailedPostPage({
     Key? key,
-    required this.commentBloc,
     required this.postData,
   }) : super(key: key);
 
@@ -29,38 +27,13 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
   @override
   void initState() {
     super.initState();
-    _comments = widget.postData.comments;
-    _setupSocket();
   }
 
-  void _setupSocket() {
-    IO.Socket socket = IO.io('http://sv', <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-    });
-
-    socket.connect();
-
-    socket.on('connect', (_) {
-      print('connected');
-    });
-
-    socket.on('new_comment', (data) {
-      setState(() {
-        _comments.add(CommentData.fromJson(data));
-      });
-    });
-
-    socket.on('disconnect', (_) {
-      print('disconnected');
-    });
-  }
-
-  Future<void> _loadComments() async {
-    // Here you would fetch comments from your backend or other source
-    // For this example, we'll assume comments are already in widget.postData.comments
+  Future<void> reloadComments() async {
+    List<CommentData> comments = await widget.postData.loadComments();
     setState(() {
-      _comments = widget.postData.comments;
+      _comments = comments;
+      widget.postData.comments = comments;
     });
   }
 
@@ -86,7 +59,7 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
             PostAndCommentInDetailedPage(
               postData: widget.postData,
               comments: _comments,
-              onCommentAdded: _loadComments,
+              onCommentAdded: reloadComments,
             ),
             // Add some spacing
           ],
@@ -108,11 +81,12 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
             ),
             IconButton(
               icon: const Icon(Icons.send),
-              onPressed: () {
-                widget.commentBloc.commentEventSink
-                    .add(AddComment(_commentController.text));
+              onPressed: () async {
+                await widget.postData
+                    .commentPost(_commentController.text, null);
                 _commentController.clear();
-                _loadComments();
+                reloadComments(); // Update comments
+                setState(() {}); // Update UI
               },
             ),
           ],
@@ -123,7 +97,6 @@ class _DetailedPostPageState extends State<DetailedPostPage> {
 
   @override
   void dispose() {
-    widget.commentBloc.dispose();
     super.dispose();
   }
 }
@@ -149,6 +122,7 @@ class _PostAndCommentInDetailedPageState
     extends State<PostAndCommentInDetailedPage> {
   void onLike() async {
     await widget.postData.likePost();
+
     setState(() {});
   }
 
@@ -240,14 +214,17 @@ class _PostAndCommentInDetailedPageState
                 Row(
                   children: [
                     Text(
-                      '${widget.comments.length} comments',
+                      '${widget.postData.comments?.length ?? 0} comments',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     const SizedBox(width: 8.0),
-                    Text(
-                      '${widget.postData.shares?.length ?? 0} shares',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
+                    if (widget.postData.groupId == null &&
+                        widget.postData.sharePostId == null &&
+                        widget.postData.userIsPoster != true)
+                      Text(
+                        '${widget.postData.shares?.length ?? 0} shares',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
                   ],
                 ),
                 //Remove comment button
@@ -276,11 +253,18 @@ class _PostAndCommentInDetailedPageState
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: onShare,
-                    ),
-                    Text('Share'),
+                    if (widget.postData.groupId == null &&
+                        widget.postData.sharePostId == null &&
+                        widget.postData.userIsPoster != true)
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.share),
+                            onPressed: onShare,
+                          ),
+                          Text('Share'),
+                        ],
+                      ),
                   ],
                 ),
               ],
@@ -290,13 +274,33 @@ class _PostAndCommentInDetailedPageState
               color: Color.fromARGB(123, 158, 158, 158),
               thickness: 1,
             ),
-            for (var comment in widget.comments)
-              CommentItem(
-                comment: comment,
-                onRemove: () {
-                  // Todo Handle remove comment action
-                },
-              ),
+            FutureBuilder<List<CommentData>>(
+              future: widget.postData.loadComments(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error loading comments'),
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      for (var comment in snapshot.data!)
+                        CommentItem(
+                          comment: comment,
+                          onRemove: () async {
+                            await widget.postData.removeComment(comment.id);
+                            setState(() {});
+                          },
+                        ),
+                    ],
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),

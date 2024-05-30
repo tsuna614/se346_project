@@ -5,7 +5,6 @@ import 'package:se346_project/src/utils/convertTime.dart';
 
 class CommentItem extends StatefulWidget {
   final CommentData comment;
-
   final VoidCallback onRemove;
 
   const CommentItem({
@@ -112,16 +111,29 @@ class _CommentItemState extends State<CommentItem> {
                     ],
                   ),
                 ),
+                if (widget.comment.isCommenter)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: PopupMenuButton(
+                      itemBuilder: (BuildContext context) {
+                        return <PopupMenuEntry>[
+                          PopupMenuItem(
+                            child: Text('Delete'),
+                            value: 'delete',
+                          ),
+                        ];
+                      },
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          // Handle edit action
+                        } else if (value == 'delete') {
+                          widget.onRemove();
+                        }
+                      },
+                    ),
+                  ),
               ],
             ),
-            // Optional: Add a button to remove the comment
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: IconButton(
-            //     icon: Icon(Icons.delete, color: Colors.red),
-            //     onPressed: widget.onRemove,
-            //   ),
-            // ),
           ],
         ),
       ),

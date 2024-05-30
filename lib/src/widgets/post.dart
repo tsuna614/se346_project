@@ -13,9 +13,9 @@ import 'package:se346_project/src/utils/convertTime.dart';
 const _avatarSize = 40.0;
 
 class Post extends StatefulWidget {
-  final PostData postData;
+  PostData postData;
 
-  const Post({
+  Post({
     super.key,
     required this.postData,
   });
@@ -26,6 +26,7 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   bool _isLoading = false;
+
   void onLike() async {
     setState(() {
       _isLoading = true;
@@ -42,8 +43,7 @@ class _PostState extends State<Post> {
       MaterialPageRoute(
         builder: (context) => BlocProvider<CommentBloc>(
           create: (context) => CommentBloc(),
-          child: DetailedPostPage(
-              commentBloc: CommentBloc(), postData: widget.postData),
+          child: DetailedPostPage(postData: widget.postData),
         ),
       ),
     );
@@ -71,15 +71,27 @@ class _PostState extends State<Post> {
                     widget.postData.posterAvatarUrl != "")
                   CircleAvatar(
                     radius: _avatarSize / 2,
-                    //If img is null or "", use default color
-                    backgroundImage: widget.postData.posterAvatarUrl!.isNotEmpty
-                        ? NetworkImage(widget.postData.posterAvatarUrl!)
-                        : null,
+                    child: ClipOval(
+                      child: FadeInImage.memoryNetwork(
+                        placeholder: kTransparentImage,
+                        image: widget.postData.posterAvatarUrl!,
+                        fit: BoxFit.cover,
+                        width: _avatarSize,
+                        height: _avatarSize,
+                        imageErrorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: _avatarSize,
+                            height: _avatarSize,
+                            color: Colors.grey,
+                          );
+                        },
+                      ),
+                    ),
                   )
                 else
                   CircleAvatar(
                     radius: _avatarSize / 2,
-                    backgroundColor: Colors.green,
+                    child: Icon(Icons.person),
                   ),
                 const SizedBox(width: 8.0),
                 Column(
@@ -147,6 +159,98 @@ class _PostState extends State<Post> {
                       );
                     },
                   ),
+                if (widget.postData.sharePostId != null)
+                  FutureBuilder<PostData?>(
+                    future: widget.postData.fetchSharedPost(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error loading shared post');
+                      } else if (snapshot.hasData) {
+                        final sharedPost = snapshot.data!;
+                        return Card(
+                          color: Colors.grey[100],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    if (sharedPost.posterAvatarUrl != null &&
+                                        sharedPost.posterAvatarUrl != "")
+                                      CircleAvatar(
+                                        radius: _avatarSize / 2,
+                                        child: ClipOval(
+                                          child: FadeInImage.memoryNetwork(
+                                            placeholder: kTransparentImage,
+                                            image: sharedPost.posterAvatarUrl!,
+                                            fit: BoxFit.cover,
+                                            width: _avatarSize,
+                                            height: _avatarSize,
+                                            imageErrorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Container(
+                                                width: _avatarSize,
+                                                height: _avatarSize,
+                                                color: Colors.grey,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      CircleAvatar(
+                                        radius: _avatarSize / 2,
+                                        child: Icon(Icons.person),
+                                      ),
+                                    const SizedBox(width: 8.0),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(sharedPost.name),
+                                        Text(
+                                          convertTime(sharedPost.createdAt),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .caption,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(sharedPost.content),
+                                if (sharedPost.mediaUrl != null)
+                                  FadeInImage.memoryNetwork(
+                                    placeholder: kTransparentImage,
+                                    image: sharedPost.mediaUrl!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 200,
+                                    imageErrorBuilder:
+                                        (context, error, stackTrace) {
+                                      return Container(
+                                        width: double.infinity,
+                                        height: 200,
+                                        color: Colors.grey[300],
+                                      );
+                                    },
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
+                    },
+                  ),
               ],
             ),
             const SizedBox(height: 8.0),
@@ -176,10 +280,11 @@ class _PostState extends State<Post> {
                       style: Theme.of(context).textTheme.caption,
                     ),
                     const SizedBox(width: 8.0),
-                    Text(
-                      '${widget.postData.shares?.length ?? 0} shares',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
+                    if (widget.postData.groupId == null)
+                      Text(
+                        '${widget.postData.shares?.length ?? 0} shares',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
                   ],
                 ),
               ],
@@ -190,7 +295,10 @@ class _PostState extends State<Post> {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.thumb_up),
+                      icon: Icon(Icons.thumb_up,
+                          color: widget.postData.userLiked ?? false
+                              ? Colors.blue
+                              : Colors.grey),
                       onPressed: onLike,
                     ),
                     Text('Like'),
@@ -208,11 +316,28 @@ class _PostState extends State<Post> {
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: onShare,
+                    if (widget.postData.groupId == null)
+                      IconButton(
+                        icon: const Icon(Icons.share),
+                        onPressed: onShare,
+                      ),
+                    SizedBox(
+                      width: 8,
                     ),
-                    Text('Share'),
+                    Text(
+                      (widget.postData.groupId == null &&
+                              widget.postData.sharePostId == null &&
+                              widget.postData.userIsPoster != true)
+                          ? 'Share'
+                          : 'Cannot share',
+                      style: TextStyle(
+                        color: (widget.postData.groupId == null &&
+                                widget.postData.sharePostId == null &&
+                                widget.postData.userIsPoster != true)
+                            ? Colors.black
+                            : Colors.grey,
+                      ),
+                    ),
                   ],
                 ),
               ],
