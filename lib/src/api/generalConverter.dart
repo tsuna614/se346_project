@@ -77,6 +77,8 @@ class GeneralConverter {
         posterAvatarUrl: post['posterAvatarUrl'],
         createdAt: DateTime.parse(post['createdAt']),
         updatedAt: DateTime.parse(post['updatedAt']),
+        userLiked: post['userLiked'] ?? false,
+        userIsPoster: post['userIsPoster'] ?? false,
       );
       posts.add(postData);
     }
@@ -86,7 +88,12 @@ class GeneralConverter {
   static UserProfileData convertUserProfileFromJson(
       Map<String, dynamic> jsonData) {
     List<PostData>? posts = convertPostsFromJson(jsonData['posts'] ?? []);
-
+    List<String> followers = jsonData['followers'] != null
+        ? (jsonData['followers'] as List).map((follower) {
+            return follower as String;
+          }).toList()
+        : [];
+    print("Followers: $followers");
     UserProfileData userProfileData = UserProfileData(
       id: jsonData['userId'],
       name: jsonData['name'],
@@ -96,6 +103,8 @@ class GeneralConverter {
       bio: jsonData['bio'],
       posts: posts,
       profileBackground: jsonData['profileBackground'],
+      followers: followers,
+      isFollowing: jsonData['isFollowing'] ?? false,
     );
 
     return userProfileData;

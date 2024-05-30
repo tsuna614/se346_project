@@ -20,32 +20,9 @@ class GeneralAPI {
     return _instance;
   }
   GeneralAPI._internal();
-  //Todo remove later: this is used to load sample data from "users_database.json" for searchUser
-  Future<void> loadSampleData() async {
-    String jsonString =
-        await rootBundle.loadString('assets/users_database.json');
-    List<dynamic> jsonData = jsonDecode(jsonString);
-    for (var user in jsonData) {
-      List<PostData>? posts =
-          GeneralConverter.convertPostsFromJson(user['posts']);
-      UserProfileData userProfileData = UserProfileData(
-        id: user['userId'],
-        name: user['name'],
-        email: user['email'],
-        phone: user['phone'],
-        avatarUrl: user['avatarUrl'],
-        bio: user['bio'],
-        posts: posts,
-        profileBackground: user['profileBackground'],
-      );
-      _users.add(userProfileData);
-    }
-  }
-
+  //Is used along side with get user count
   Future<List<UserProfileData>> searchUser(
-    String name,
-    //Todo: Implement search using api later
-    {
+    String name, {
     int limit = 10,
     int page = 1,
   }) async {
@@ -93,63 +70,25 @@ class GeneralAPI {
     return response.statusCode == 200;
   }
 
-  //Create group
-  Future<bool?> createGroup(
-      String name, String description, File? media) async {
-    String? uid = _firebase.currentUser?.uid;
-
-    if (uid == null) {
-      return null;
-    }
-    if (description.isEmpty) {
-      description = '...';
-    }
-    //Send name, description, and uid in body and banner (media field) in multipart
-    FormData formData = FormData.fromMap({
-      'name': name,
-      'description': description,
-      'userId': uid,
-      'media': media != null
-          ? await MultipartFile.fromFile(media.path,
-              filename: media.path.split('/').last)
-          : null,
-    });
-
-    Response response = await dio.post('$baseUrl/group/',
-        data: formData,
-        options: Options(headers: {
-          'Content-Type': 'multipart/form-data',
-        }));
-    return response.statusCode == 200;
-  }
-
-  //Get total user count, suppl
+  //Get total user count, supply username to search
   Future<int> getUserCount(String username) async {
-    if (_users.isEmpty) {
-      await loadSampleData();
-    }
-    return _users
-        .where(
-            (user) => user.name.toLowerCase().contains(username.toLowerCase()))
-        .length;
+    //Query exactly the same as searchUser. Return the header 'X-Total-Count' from response
+    final res = await dio.get('$baseUrl/user/', queryParameters: {
+      'name': username,
+      'userId': _firebase.currentUser?.uid,
+    });
+    return int.parse(res.headers['X-Total-Count']?[0] ?? '0');
   }
 
-  Future<List<PostData>?> loadHomePosts() async {
-    String jsonString = await rootBundle.loadString('assets/posts.json');
-    List<dynamic> jsonData = jsonDecode(jsonString);
-
-    List<PostData>? posts = GeneralConverter.convertPostsFromJson(jsonData);
-    return posts ?? [];
-  }
-
-  Future<UserProfileData?> loadProfile(String uid) async {
-    if (uid == null) {
+  Future<UserProfileData?> loadOtherProfile(String otherUserId) async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (otherUserId == null) {
       return null;
     } else {
       // "/UserWallPosts/:userId",
-      Response response = await dio.get('$baseUrl/post/UserWallPosts/$uid');
+      Response response = await dio.get('$baseUrl/post/UserWallPosts/$uid',
+          queryParameters: {'otherUserId': otherUserId});
       if (response.statusCode == 200) {
-        print(response.data);
         Map<String, dynamic> userData = response.data['user'];
         List<dynamic> postData = response.data['posts'];
 
@@ -186,21 +125,20 @@ class GeneralAPI {
     }
   }
 
-  Future<List<GroupData>?> searchGroup(String groupName) async {
-    //Attach userid and group name
-    Response response = await dio.get('$baseUrl/group/', queryParameters: {
-      'name': groupName,
-      'userId': _firebase.currentUser?.uid
-    });
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = response.data;
-      List<GroupData> groups = jsonData.map((group) {
-        return GeneralConverter.convertGroupFromJson(group);
-      }).toList();
+  //The result is a boolean, if the current user is now following the target user
+  Future<bool> toggleFollow(String userId) async {
+    if (userId.isEmpty) {
+      return false;
+    }
+    try {
+      final res = await dio.put('$baseUrl/user/toggleFollow',
+          data: {'userId': _firebase.currentUser!.uid, 'followId': userId});
+      Map<String, dynamic> data = res.data;
 
-      return groups;
-    } else {
-      return null;
+      return data['isFollowing'];
+    } catch (e) {
+      print("Error following user: $e");
+      return false;
     }
   }
 }

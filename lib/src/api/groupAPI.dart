@@ -32,6 +32,53 @@ class GroupAPI {
     }
   }
 
+  Future<List<GroupData>?> searchGroup(String groupName) async {
+    //Attach userid and group name
+    Response response = await dio.get('$baseUrl/group/', queryParameters: {
+      'name': groupName,
+      'userId': _firebase.currentUser?.uid
+    });
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = response.data;
+      List<GroupData> groups = jsonData.map((group) {
+        return GeneralConverter.convertGroupFromJson(group);
+      }).toList();
+
+      return groups;
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool?> createGroup(
+      String name, String description, File? media) async {
+    String? uid = _firebase.currentUser?.uid;
+
+    if (uid == null) {
+      return null;
+    }
+    if (description.isEmpty) {
+      description = '...';
+    }
+    //Send name, description, and uid in body and banner (media field) in multipart
+    FormData formData = FormData.fromMap({
+      'name': name,
+      'description': description,
+      'userId': uid,
+      'media': media != null
+          ? await MultipartFile.fromFile(media.path,
+              filename: media.path.split('/').last)
+          : null,
+    });
+
+    Response response = await dio.post('$baseUrl/group/',
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+        }));
+    return response.statusCode == 200;
+  }
+
   Future<bool> leaveGroup(String groupId) async {
     if (groupId.isEmpty) {
       return false;
@@ -52,9 +99,12 @@ class GroupAPI {
       return [];
     }
     try {
-      final res = await dio.get('$baseUrl/group/$groupId/posts');
+      final res =
+          await dio.get('$baseUrl/group/$groupId/posts', queryParameters: {
+        'userId': _firebase.currentUser!.uid,
+      });
       if (res.statusCode == 200) {
-        List<dynamic> data = res.data;
+        List<dynamic> data = res.data['posts'];
 
         return GeneralConverter.convertPostsFromJson(data)!;
       }
@@ -70,7 +120,9 @@ class GroupAPI {
       return null;
     }
     try {
-      final res = await dio.get('$baseUrl/group/$groupId');
+      final res = await dio.get('$baseUrl/group/$groupId', queryParameters: {
+        'userId': _firebase.currentUser!.uid,
+      });
       if (res.statusCode == 200) {
         Map<String, dynamic> data = res.data;
         return data['name'];
