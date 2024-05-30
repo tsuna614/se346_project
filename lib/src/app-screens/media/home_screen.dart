@@ -51,12 +51,20 @@ class HomeScreen extends StatelessWidget {
                     );
                   } else {
                     List<PostData> jsonData = snapshot.data as List<PostData>;
-                    return Column(children: [
-                      for (var post in jsonData)
-                        Post(
-                          postData: post,
+                    if (jsonData.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text('No posts to show. Make some friends!'),
                         ),
-                    ]);
+                      );
+                    } else
+                      return Column(children: [
+                        for (var post in jsonData)
+                          Post(
+                            postData: post,
+                          ),
+                      ]);
                   }
                 },
               ),
