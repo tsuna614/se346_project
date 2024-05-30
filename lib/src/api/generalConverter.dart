@@ -44,42 +44,8 @@ class GeneralConverter {
       return null;
     }
     for (var post in jsonData) {
-      List<CommentData> comments = (post['comments'] as List).map((comment) {
-        return CommentData(
-          id: comment['_id'],
-          postId: comment['postId'],
-          commenterId: comment['commenterId'],
-          commenterName: comment['commenterName'],
-          commenterAvatarUrl: comment['commenterAvatarUrl'],
-          content: comment['content'],
-          mediaUrl: comment['mediaUrl'],
-          createdAt: DateTime.parse(comment['createdAt']),
-          updatedAt: DateTime.parse(comment['updatedAt']),
-        );
-      }).toList();
-      List<String> likes = (post['likes'] as List).map((like) {
-        return like as String;
-      }).toList();
-      List<String> shares = (post['shares'] as List).map((share) {
-        return share as String;
-      }).toList();
-      PostData postData = PostData(
-        id: post['_id'],
-        posterId: post['posterId'],
-        name: post['name'],
-        likes: likes,
-        shares: shares,
-        content: post['content'],
-        comments: comments,
-        mediaUrl: post['mediaUrl'],
-        sharePostId: post['sharePostId'],
-        groupId: post['groupId'],
-        posterAvatarUrl: post['posterAvatarUrl'],
-        createdAt: DateTime.parse(post['createdAt']),
-        updatedAt: DateTime.parse(post['updatedAt']),
-        userLiked: post['userLiked'] ?? false,
-        userIsPoster: post['userIsPoster'] ?? false,
-      );
+      PostData postData = PostData.fromJson(post);
+
       posts.add(postData);
     }
     return posts;
@@ -102,7 +68,7 @@ class GeneralConverter {
       avatarUrl: jsonData['avatarUrl'],
       bio: jsonData['bio'],
       posts: posts,
-      profileBackground: jsonData['profileBackground'],
+      profileBackground: jsonData['profileBackground'] ?? '',
       followers: followers,
       isFollowing: jsonData['isFollowing'] ?? false,
     );

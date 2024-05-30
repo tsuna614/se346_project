@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/api/groupAPI.dart';
@@ -26,7 +28,7 @@ class UserProfileData {
       this.avatarUrl,
       this.bio,
       this.posts,
-      this.profileBackground,
+      this.profileBackground = "",
       this.followers,
       this.createdAt,
       this.updatedAt,
@@ -35,9 +37,7 @@ class UserProfileData {
 
   Future<bool> toggleFollow() async {
     bool following = await GeneralAPI().toggleFollow(id);
-    if (following) {
-      isFollowing = !isFollowing;
-    }
+    isFollowing = following;
 
     return following;
   }
@@ -50,12 +50,13 @@ class UserProfileData {
 //Returned on home
 //Can query group name if post is in a group
 //Can query user profile for related user info
+
 class PostData {
   final String id;
   final String posterId;
   final String name; // poster name
   final String content;
-  final List<CommentData> comments;
+  List<CommentData> comments;
   // List of user ids who liked the post
   final List<String>? likes;
   //List of user ids who shared the post
@@ -88,6 +89,31 @@ class PostData {
     this.userIsPoster,
     this.userLiked,
   });
+  Future<PostData?> fetchSharedPost() async {
+    // Implement the logic to fetch the shared post data using sharePostId.
+    // This is a placeholder function and should be replaced with actual data fetching logic.
+    return Future.delayed(Duration(seconds: 2), () {
+      // Simulating a network call
+      return PostData(
+        id: 'shared_post_id',
+        posterId: 'shared_poster_id',
+        name: 'Shared Poster Name',
+        content: 'This is the content of the shared post.',
+        comments: [],
+        likes: [],
+        shares: [],
+        posterAvatarUrl: null,
+        mediaUrl: null,
+        groupId: null,
+        sharePostId: null,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        userIsPoster: false,
+        userLiked: false,
+        isEdited: false,
+      );
+    });
+  }
 
   Future<void> likePost() async {
     bool isLiked = await PostAPI().toggleLikePost(id);
@@ -100,6 +126,34 @@ class PostData {
     }
 
     print('Post liked: $isLiked');
+  }
+
+  Future<bool> commentPost(String content, File? media) async {
+    try {
+      bool result = await PostAPI().commentPost(id, content, media);
+      return result;
+    } catch (e, stackTrace) {
+      print('Error commenting post: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
+
+  Future<bool> removeComment(String commentId) async {
+    try {
+      bool result = await PostAPI().removeComment(id, commentId);
+      return result;
+    } catch (e, stackTrace) {
+      print('Error removing comment: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
+
+  Future<List<CommentData>> loadComments() async {
+    comments = await PostAPI().loadComments(id);
+    print('Comments loaded: ${comments.length}');
+    return comments;
   }
 
   Future<void> unlikePost() async {
@@ -140,32 +194,46 @@ class PostData {
     );
   }
 
-  static Future<PostData> fromJson(Map<String, dynamic> json) async {
-    List<CommentData> comments = [];
-    List<String> likes = (json['likes'] as List).map((like) {
-      return like as String;
-    }).toList();
-    List<String> shares = (json['shares'] as List).map((share) {
-      return share as String;
-    }).toList();
-    PostData postData = PostData(
-      id: json['_id'],
-      posterId: json['posterId'],
-      name: json['name'],
-      likes: likes,
-      shares: shares,
-      content: json['content'],
-      comments: comments,
-      mediaUrl: json['mediaUrl'],
-      sharePostId: json['sharePostId'],
-      groupId: json['groupId'],
-      posterAvatarUrl: json['posterAvatarUrl'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      userLiked: json['userLiked'] ?? false,
-      userIsPoster: json['userIsPoster'] ?? false,
-    );
-    return postData;
+  static PostData fromJson(Map<String, dynamic> json) {
+    try {
+      List<CommentData> commentData = (json['comments'] as List).map((comment) {
+        return CommentData.fromJson(comment);
+      }).toList();
+
+      List<String> likes = (json['likes'] as List).map((like) {
+        return like as String;
+      }).toList();
+      List<String> shares = (json['shares'] as List).map((share) {
+        return share as String;
+      }).toList();
+
+      PostData postData = PostData(
+        id: json['_id'],
+        posterId: json['posterId'],
+        name: json['name'],
+        likes: likes,
+        shares: shares,
+        content: json['content'],
+        comments: commentData,
+        mediaUrl: json['mediaUrl'],
+        sharePostId: json['sharePostId'],
+        groupId: json['groupId'],
+        posterAvatarUrl: json['posterAvatarUrl'] ?? '',
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: DateTime.parse(json['updatedAt']),
+        userLiked: json['userLiked'] ?? false,
+        userIsPoster: json['userIsPoster'] ?? json['userIsPoster'] == 'true'
+            ? true
+            : false,
+      );
+
+      return postData;
+    } catch (e, stackTrace) {
+      print('Error during parsing JSON: $e');
+      print('Stack trace: $stackTrace');
+      // Add more specific error handling if needed
+      throw e; // Rethrow the exception to propagate it upwards
+    }
   }
 }
 
@@ -193,7 +261,7 @@ class CommentData {
     this.isCommenter = false,
   });
 
-  static fromJson(Map<String, dynamic> json) {
+  static CommentData fromJson(Map<String, dynamic> json) {
     return CommentData(
       id: json['_id'],
       postId: json['postId'],

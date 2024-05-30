@@ -46,11 +46,48 @@ class PostAPI {
             : null,
       });
       final res =
-          await dio.post('$baseUrl/post/$postId/comment', data: formData);
+          await dio.post('$baseUrl/post/$postId/comments', data: formData);
       return res.statusCode == 200;
     } catch (e) {
       print("Error commenting post: $e");
       return false;
+    }
+  }
+
+  Future<bool> removeComment(String postId, String commentId) async {
+    if (postId.isEmpty || commentId.isEmpty) {
+      return false;
+    }
+    try {
+      final res = await dio.delete('$baseUrl/post/$postId/comments/$commentId',
+          data: {'userId': _firebase.currentUser!.uid});
+      return res.statusCode == 200;
+    } catch (e) {
+      print("Error removing comment: $e");
+      return false;
+    }
+  }
+
+  Future<List<CommentData>> loadComments(String postId) async {
+    if (postId.isEmpty) {
+      return [];
+    }
+    try {
+      final res =
+          await dio.get('$baseUrl/post/$postId/comments', queryParameters: {
+        'userId': _firebase.currentUser!.uid,
+      });
+      List<dynamic> jsonData = res.data;
+
+      List<CommentData> comments = [];
+      for (var comment in jsonData) {
+        comments.add(CommentData.fromJson(comment));
+      }
+      return comments;
+    } catch (e, stackTrace) {
+      print("Error loading comments: $e");
+      print("Stack trace: $stackTrace");
+      return [];
     }
   }
 
@@ -62,6 +99,7 @@ class PostAPI {
           queryParameters: {'userId': _firebase.currentUser!.uid});
       List<dynamic> jsonData = res.data;
       List<PostData> posts = [];
+
       for (var post in jsonData) {
         posts.add(await PostData.fromJson(post));
       }
