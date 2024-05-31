@@ -41,6 +41,50 @@ class UserProfileData {
 
     return following;
   }
+
+  Future<bool> changeAvatar(File avatar) async {
+    try {
+      await GeneralAPI().changeAvatar(avatar);
+      return true;
+    } catch (e, stackTrace) {
+      print('Error changing avatar: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
+
+  Future<bool> changeProfileBackground(File profileBackground) async {
+    try {
+      await GeneralAPI().changeProfileBackground(profileBackground);
+      return true;
+    } catch (e, stackTrace) {
+      print('Error changing profile background: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
+
+  Future<bool> changeBio(String bio) async {
+    try {
+      await GeneralAPI().changeBio(bio);
+      return true;
+    } catch (e, stackTrace) {
+      print('Error changing bio: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
+
+  Future<bool> changeName(String name) async {
+    try {
+      await GeneralAPI().changeName(name);
+      return true;
+    } catch (e, stackTrace) {
+      print('Error changing name: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
 }
 
 //Same as user profile data, all user wall posts are public and can be viewed by anyone
@@ -147,7 +191,7 @@ class PostData {
   }
 
   Future<void> reportPost() async {
-    // Implementation to report the post
+    // Todo   Implement report post
   }
 
   Future<void> sharePost() async {

@@ -20,6 +20,109 @@ class GeneralAPI {
     return _instance;
   }
   GeneralAPI._internal();
+  Future<List<UserProfileData>> getFollowing() async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return [];
+    }
+    final res = await dio.get('$baseUrl/user/$uid/following');
+    List<dynamic> jsonData = res.data;
+    List<UserProfileData> users = jsonData.map((user) {
+      return GeneralConverter.convertUserProfileFromJson(user);
+    }).toList();
+    return users;
+  }
+
+  Future<UserProfileData?> changeAvatar(File avatar) async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return null;
+    }
+    FormData formData = FormData.fromMap({
+      'userId': uid,
+      'media': await MultipartFile.fromFile(avatar.path,
+          filename: avatar.path.split('/').last),
+    });
+    Response response = await dio.put('$baseUrl/user/changeAvatar',
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+        }));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> userData = response.data;
+      return GeneralConverter.convertUserProfileFromJson(userData);
+    } else {
+      return null;
+    }
+  }
+
+  Future<UserProfileData?> changeProfileBackground(
+      File profileBackground) async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return null;
+    }
+    FormData formData = FormData.fromMap({
+      'userId': uid,
+      'media': await MultipartFile.fromFile(profileBackground.path,
+          filename: profileBackground.path.split('/').last),
+    });
+    Response response = await dio.put('$baseUrl/user/changeProfileBackground',
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+        }));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> userData = response.data;
+      return GeneralConverter.convertUserProfileFromJson(userData);
+    } else {
+      return null;
+    }
+  }
+
+  Future<UserProfileData?> changeBio(String bio) async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return null;
+    }
+    final res = await dio
+        .put('$baseUrl/user/changeBio', data: {'userId': uid, 'bio': bio});
+    if (res.statusCode == 200) {
+      Map<String, dynamic> userData = res.data;
+      return GeneralConverter.convertUserProfileFromJson(userData);
+    } else {
+      return null;
+    }
+  }
+
+  Future<UserProfileData?> changeName(String name) async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return null;
+    }
+    final res = await dio
+        .put('$baseUrl/user/changeName', data: {'userId': uid, 'name': name});
+    if (res.statusCode == 200) {
+      Map<String, dynamic> userData = res.data;
+      return GeneralConverter.convertUserProfileFromJson(userData);
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<GroupData>> getGroupsUserIsIn() async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return [];
+    }
+    final res = await dio.get('$baseUrl/user/$uid/groups');
+    List<dynamic> jsonData = res.data;
+    List<GroupData> groups = jsonData.map((group) {
+      return GeneralConverter.convertGroupFromJson(group);
+    }).toList();
+    return groups;
+  }
+
   //Is used along side with get user count
   Future<List<UserProfileData>> searchUser(
     String name, {

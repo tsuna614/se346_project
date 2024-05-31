@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
+import 'package:se346_project/src/app-screens/profile/edit_profile_screen.dart';
 import 'package:se346_project/src/widgets/post.dart';
 
 import 'package:transparent_image/transparent_image.dart';
@@ -51,8 +52,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.edit, color: Colors.green),
-                onPressed: () {
-                  // Todo implement edit profile
+                onPressed: () async {
+                  // wait for pop to refresh the profile
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FutureBuilder(
+                              future: _profileFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                        'Error loading user profile. Error: ${snapshot.error}.'),
+                                  );
+                                } else {
+                                  UserProfileData user =
+                                      snapshot.data as UserProfileData;
+                                  return EditProfileScreen(user);
+                                }
+                              },
+                            )),
+                  );
+
+                  _refreshProfile();
                 },
               ),
             ],
