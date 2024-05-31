@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingScreen();
           }
+
           if (snapshot.hasData) {
             return const MainScreen();
           }

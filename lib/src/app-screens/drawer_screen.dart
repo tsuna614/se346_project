@@ -138,7 +138,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       ? FontAwesomeIcons.users
                       : itemIndex == 2
                           ? FontAwesomeIcons.userLarge
-                          : FontAwesomeIcons.gear,
+                          : FontAwesomeIcons.userFriends,
               color: Colors.white,
               size: 16,
             ),
@@ -152,7 +152,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       ? 'Social'
                       : itemIndex == 2
                           ? 'Profile'
-                          : 'Settings',
+                          : 'Friends',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,

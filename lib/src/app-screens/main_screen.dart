@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:se346_project/src/app-screens/drawer_screen.dart';
 import 'package:se346_project/src/app-screens/media/home_screen.dart';
 import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
-import 'package:se346_project/src/app-screens/settings/settings_screen.dart';
+import 'package:se346_project/src/app-screens/friends/friends_screen.dart';
 import 'package:se346_project/src/app-screens/social/social_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -45,7 +45,9 @@ class _MainScreenState extends State<MainScreen> {
             );
             break;
           case 3:
-            appScreen = const SettingsScreen();
+            appScreen = FriendsScreen(
+              alternateDrawer: alternateDrawer,
+            );
             break;
           default:
             appScreen = HomeScreen(
