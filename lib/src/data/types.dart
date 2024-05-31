@@ -181,17 +181,12 @@ class PostData {
     return comments;
   }
 
-  Future<void> unlikePost() async {
-    // Implementation to unlike the post
-  }
-
   Future<bool> deletePost() async {
-    // Implementation to delete the post
     return PostAPI().deletePost(id);
   }
 
-  Future<void> reportPost() async {
-    // Todo   Implement report post
+  Future<void> reportPost(String reason) async {
+    await PostAPI().reportPost(id, reason);
   }
 
   Future<void> sharePost() async {
@@ -199,12 +194,10 @@ class PostData {
   }
 
   Future<GroupData> getGroup() async {
-    // Implementation to get group details
     return GroupData(id: '', name: '', description: '');
   }
 
   Future<String?> getGroupName() async {
-    // Implementation to get group name
     if (groupId != null) {
       return GroupAPI().getGroupName(groupId!);
     }
@@ -212,7 +205,7 @@ class PostData {
   }
 
   Future<UserProfileData> getPosterProfile() async {
-    // Implementation to get poster profile
+    //Todo maybe
     return UserProfileData(
       id: posterId,
       name: name,

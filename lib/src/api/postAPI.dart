@@ -60,6 +60,20 @@ class PostAPI {
     }
   }
 
+  Future<bool> reportPost(String postId, String reason) async {
+    if (postId.isEmpty) {
+      return false;
+    }
+    try {
+      final res = await dio.post('$baseUrl/post/$postId/report',
+          data: {'userId': _firebase.currentUser!.uid, 'reason': reason});
+      return res.statusCode == 200;
+    } catch (e) {
+      print("Error reporting post: $e");
+      return false;
+    }
+  }
+
   Future<PostData?> getPost(String postId) async {
     if (postId.isEmpty) {
       return null;

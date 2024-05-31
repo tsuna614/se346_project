@@ -25,7 +25,7 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   bool _isLoading = false;
-
+  TextEditingController reportController = TextEditingController();
   void onLike() async {
     setState(() {
       _isLoading = true;
@@ -93,16 +93,49 @@ class _PostState extends State<Post> {
   }
 
   void onReport() async {
-    // Logic for reporting the post
-    await widget.postData.reportPost();
-    // Show snackbar
-    ScaffoldMessenger.of(context).clearSnackBars();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Post reported'),
-      ),
+    //Clear
+    reportController.clear();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Report post'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: reportController,
+                decoration: InputDecoration(
+                  hintText: 'Reason for reporting',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, reportController.text),
+              child: Text('Report'),
+            ),
+          ],
+        );
+      },
     );
+
+    if (result != null) {
+      await widget.postData.reportPost(result);
+
+      // Show snackbar
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Post reported'),
+        ),
+      );
+    }
   }
 
   @override
