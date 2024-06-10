@@ -100,7 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildSignInWithOther(),
             ],
           ),
         ),
@@ -248,69 +247,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSignInWithOther() {
-    return Column(
-      children: [
-        const Text(
-          '- O R -',
-          style: TextStyle(color: Color.fromARGB(255, 38, 78, 8)),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              minimumSize: const Size.fromHeight(40)),
-          onPressed: () async {},
-          child: Ink(
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Icon(
-                    FontAwesomeIcons.google,
-                    color: Colors.black,
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    'Sign in with Google',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              minimumSize: const Size.fromHeight(40)),
-          onPressed: () {},
-          child: Ink(
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Icon(
-                    Icons.facebook,
-                    color: Colors.black,
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    'Sign in with Facebook',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
