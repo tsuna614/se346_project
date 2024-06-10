@@ -34,6 +34,7 @@ class _SocialScreenState extends State<SocialScreen>
   @override
   void initState() {
     super.initState();
+    _searchUser();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {

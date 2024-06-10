@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:se346_project/src/app-screens/drawer_screen.dart';
 import 'package:se346_project/src/app-screens/media/home_screen.dart';
+import 'package:se346_project/src/app-screens/notifications/notifications_screen.dart';
 import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
 import 'package:se346_project/src/app-screens/friends/friends_screen.dart';
 import 'package:se346_project/src/app-screens/social/social_screen.dart';
@@ -48,6 +49,9 @@ class _MainScreenState extends State<MainScreen> {
             appScreen = FriendsScreen(
               alternateDrawer: alternateDrawer,
             );
+            break;
+          case 4:
+            appScreen = NotificationsScreen();
             break;
           default:
             appScreen = HomeScreen(
@@ -117,6 +121,12 @@ class _MainScreenState extends State<MainScreen> {
                 body: Stack(
                   children: [
                     appScreen,
+                    if (isDrawerOpen)
+                      SizedBox.expand(
+                        child: Container(
+                          color: Colors.black.withOpacity(0),
+                        ),
+                      ),
                   ],
                 ),
               ),

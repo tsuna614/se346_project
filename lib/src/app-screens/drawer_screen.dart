@@ -61,17 +61,21 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 children: [
                   buildAnimatedButton(context, 0),
                   const SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   buildAnimatedButton(context, 1),
                   const SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   buildAnimatedButton(context, 2),
                   const SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   buildAnimatedButton(context, 3),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  buildAnimatedButton(context, 4),
                 ],
               ),
               Expanded(child: Container()),
@@ -135,10 +139,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
               itemIndex == 0
                   ? FontAwesomeIcons.house
                   : itemIndex == 1
-                      ? FontAwesomeIcons.users
+                      ? FontAwesomeIcons.magnifyingGlass
                       : itemIndex == 2
                           ? FontAwesomeIcons.userLarge
-                          : FontAwesomeIcons.userFriends,
+                          : itemIndex == 3
+                              ? FontAwesomeIcons.userGroup
+                              : FontAwesomeIcons.solidBell,
               color: Colors.white,
               size: 16,
             ),
@@ -149,10 +155,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
               itemIndex == 0
                   ? 'Home'
                   : itemIndex == 1
-                      ? 'Social'
+                      ? 'Search'
                       : itemIndex == 2
                           ? 'Profile'
-                          : 'Friends',
+                          : itemIndex == 3
+                              ? 'Friends'
+                              : 'Notifications',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
