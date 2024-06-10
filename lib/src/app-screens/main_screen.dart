@@ -7,7 +7,7 @@ import 'package:se346_project/src/app-screens/social/social_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-  final String appName = 'Notfacebook';
+  final String appName = 'Posty';
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
