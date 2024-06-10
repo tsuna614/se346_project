@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/data/global_data.dart';
 import 'package:se346_project/src/api/generalConverter.dart';
@@ -12,7 +10,7 @@ class GroupAPI {
   final _firebase = FirebaseAuth.instance;
   //Singleton
   static final GroupAPI _instance = GroupAPI._internal();
-  List<GroupData> _groups = [];
+  // List<GroupData> _groups = [];
   factory GroupAPI() {
     return _instance;
   }

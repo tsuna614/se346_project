@@ -3,7 +3,7 @@ import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 
 class EditNameScreen extends StatefulWidget {
-  UserProfileData profile;
+  final UserProfileData profile;
   EditNameScreen(this.profile, {Key? key});
   @override
   _EditNameScreenState createState() => _EditNameScreenState();

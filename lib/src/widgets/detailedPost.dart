@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:se346_project/src/blocs/CommentBloc.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:se346_project/src/widgets/commentItem.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/utils/convertTime.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 const _avatarSize = 40.0;
 
 class DetailedPostPage extends StatefulWidget {
-  PostData postData; // Pass the original post data here
+  final PostData postData; // Pass the original post data here
 
   DetailedPostPage({
     Key? key,
@@ -317,7 +315,7 @@ class _PostAndCommentInDetailedPageState
                 Row(
                   children: [
                     Text(
-                      '${widget.postData.comments?.length ?? 0} comments',
+                      '${widget.postData.comments.length} comments',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     const SizedBox(width: 8.0),

@@ -3,7 +3,7 @@ import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 
 class EditBioScreen extends StatefulWidget {
-  UserProfileData profile;
+  final UserProfileData profile;
   EditBioScreen(this.profile, {Key? key});
   @override
   _EditBioScreenState createState() => _EditBioScreenState();

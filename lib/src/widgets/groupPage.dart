@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/data/types.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/widgets/post.dart';

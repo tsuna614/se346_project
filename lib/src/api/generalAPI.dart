@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:se346_project/src/data/global_data.dart';
 import 'package:se346_project/src/data/types.dart';
 
@@ -15,7 +12,7 @@ class GeneralAPI {
   final _firebase = FirebaseAuth.instance;
   //Singleton
   static final GeneralAPI _instance = GeneralAPI._internal();
-  List<UserProfileData> _users = [];
+  // List<UserProfileData> _users = [];
   factory GeneralAPI() {
     return _instance;
   }
@@ -25,6 +22,7 @@ class GeneralAPI {
     if (uid.isEmpty) {
       return [];
     }
+    print('$baseUrl/user/$uid/following');
     final res = await dio.get('$baseUrl/user/$uid/following');
     List<dynamic> jsonData = res.data;
     List<UserProfileData> users = jsonData.map((user) {
@@ -185,7 +183,7 @@ class GeneralAPI {
 
   Future<UserProfileData?> loadOtherProfile(String otherUserId) async {
     String uid = _firebase.currentUser?.uid ?? '';
-    if (otherUserId == null) {
+    if (otherUserId.isEmpty || uid.isEmpty) {
       return null;
     } else {
       // "/UserWallPosts/:userId",

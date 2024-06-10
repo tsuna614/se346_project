@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:se346_project/src/app-screens/media/home_screen.dart';
 
 class TopNavigator extends StatefulWidget {
   const TopNavigator({Key? key}) : super(key: key);

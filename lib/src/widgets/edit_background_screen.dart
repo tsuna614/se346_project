@@ -6,7 +6,7 @@ import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditProfileBackgroundScreen extends StatefulWidget {
-  UserProfileData profile;
+  final UserProfileData profile;
   EditProfileBackgroundScreen(this.profile, {Key? key});
   @override
   State<EditProfileBackgroundScreen> createState() =>

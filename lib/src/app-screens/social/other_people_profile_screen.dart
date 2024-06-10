@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
 import 'package:se346_project/src/widgets/post.dart';
 import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/data/types.dart';

@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:se346_project/src/api/generalConverter.dart';
 import 'package:se346_project/src/data/global_data.dart';
 import 'package:se346_project/src/data/types.dart';
 
@@ -151,6 +149,8 @@ class PostAPI {
     try {
       //Get /post/cleanDatatbase to clean up database
 
+      print('$baseUrl/post/home');
+      print(_firebase.currentUser!.uid);
       final res = await dio.get('$baseUrl/post/home',
           queryParameters: {'userId': _firebase.currentUser!.uid});
       List<dynamic> jsonData = res.data;

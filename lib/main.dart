@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:se346_project/firebase_options.dart';
 import 'package:se346_project/src/app-screens/main_screen.dart';
-import 'package:se346_project/src/app-screens/media/home_screen.dart';
 import 'package:se346_project/src/authentication-screens/login_screen.dart';
 import 'package:se346_project/src/loading_screen.dart';
 

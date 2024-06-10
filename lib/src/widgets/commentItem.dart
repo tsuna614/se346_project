@@ -58,8 +58,7 @@ class _CommentItemState extends State<CommentItem> {
                       Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).cardColor ?? Colors.grey[300],
+                          color: Theme.of(context).cardColor,
                           border: Border.all(
                             // Todo: apply theme later
                             color: Colors.grey[300]!,

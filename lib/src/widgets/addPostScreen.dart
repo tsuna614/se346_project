@@ -1,10 +1,7 @@
 import 'dart:io';
-import 'dart:convert'; // For JSON decoding
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http; // For making HTTP requests
 import 'package:se346_project/src/api/generalAPI.dart';
-import 'package:dio/dio.dart';
 import 'package:se346_project/src/api/groupAPI.dart';
 
 class AddPostScreen extends StatefulWidget {
@@ -69,10 +66,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _isAddingPost = false; // Stop loading
       });
 
+      // ignore: unnecessary_null_comparison
       if (result != null) {
         Navigator.pop(context, true); // Indicate success
       }
-
+//
       return; // Ensure we don't continue to the wall posting logic
     }
 

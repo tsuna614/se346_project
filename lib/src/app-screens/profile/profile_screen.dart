@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icon(Icons.edit, color: Colors.green),
                 onPressed: () async {
                   // wait for pop to refresh the profile
-                  final result = await Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => FutureBuilder(

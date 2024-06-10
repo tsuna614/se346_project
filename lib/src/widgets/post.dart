@@ -6,14 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:se346_project/src/blocs/CommentBloc.dart';
 import 'package:se346_project/src/data/types.dart';
-import 'package:se346_project/src/widgets/commentItem.dart';
 import 'package:se346_project/src/widgets/detailedPost.dart';
 import 'package:se346_project/src/utils/convertTime.dart';
 
 const _avatarSize = 40.0;
 
 class Post extends StatefulWidget {
-  PostData postData;
+  final PostData postData;
   //refresh function for parent widget
   final void Function()? refreshPreviousScreen;
 
@@ -24,16 +23,9 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  bool _isLoading = false;
   TextEditingController reportController = TextEditingController();
   void onLike() async {
-    setState(() {
-      _isLoading = true;
-    });
     await widget.postData.likePost();
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void onComment(BuildContext context) {

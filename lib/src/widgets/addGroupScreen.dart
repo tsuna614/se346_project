@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:se346_project/src/api/groupAPI.dart';
-import 'package:se346_project/src/data/types.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   @override

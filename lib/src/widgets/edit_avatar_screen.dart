@@ -6,7 +6,8 @@ import 'package:se346_project/src/api/generalAPI.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditAvatarScreen extends StatefulWidget {
-  UserProfileData profile;
+  final UserProfileData profile;
+
   EditAvatarScreen(this.profile, {Key? key});
   @override
   State<EditAvatarScreen> createState() => _EditAvatarScreenState();
