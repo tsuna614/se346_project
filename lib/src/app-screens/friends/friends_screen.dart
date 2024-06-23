@@ -16,15 +16,21 @@ class FriendsScreen extends StatefulWidget {
 class _FriendsScreenState extends State<FriendsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Future<List<UserProfileData>> _friendsFuture;
   late Future<List<UserProfileData>> _followingsFuture;
   late Future<List<GroupData>> _groupsFuture;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    _friendsFuture = _fetchFriends();
     _followingsFuture = _fetchFollowings();
     _groupsFuture = _fetchGroups();
+  }
+
+  Future<List<UserProfileData>> _fetchFriends() async {
+    return await GeneralAPI().getFriends();
   }
 
   Future<List<UserProfileData>> _fetchFollowings() async {
@@ -54,6 +60,7 @@ class _FriendsScreenState extends State<FriendsScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
+            Tab(text: 'Friends'),
             Tab(text: 'Followings'),
             Tab(text: 'Groups'),
           ],
@@ -62,10 +69,33 @@ class _FriendsScreenState extends State<FriendsScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
+          _buildFriendsTab(),
           _buildFollowingsTab(),
           _buildGroupsTab(),
         ],
       ),
+    );
+  }
+
+  Widget _buildFriendsTab() {
+    return FutureBuilder<List<UserProfileData>>(
+      future: _friendsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final followings = snapshot.data ?? [];
+          return ListView.builder(
+            itemCount: followings.length,
+            itemBuilder: (context, index) {
+              final following = followings[index];
+              return SocialFriendItem(profileData: following);
+            },
+          );
+        }
+      },
     );
   }
 

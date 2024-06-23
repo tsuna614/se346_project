@@ -12,9 +12,15 @@ class OtherProfile extends StatefulWidget {
 }
 
 class _OtherProfileState extends State<OtherProfile> {
+  bool isFriendRequestExisted = false;
+  bool isUserAlreadyFriend = false;
+
   Future<UserProfileData?> _loadUser() async {
     try {
       final user = await GeneralAPI().loadOtherProfile(widget.uid);
+      isFriendRequestExisted =
+          await GeneralAPI().checkForExistingRequest(widget.uid);
+      isUserAlreadyFriend = await GeneralAPI().isUserAlreadyFriend(widget.uid);
       return user;
     } catch (e) {
       throw e;
@@ -95,24 +101,57 @@ class _OtherProfileState extends State<OtherProfile> {
                                     fontSize: 15.0,
                                     fontWeight: FontWeight.normal)),
                             SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: _loadingFollow
-                                  ? null
-                                  : () async {
-                                      setState(() {
-                                        _loadingFollow = true;
-                                      });
-                                      bool isNowFollowing =
-                                          await user.toggleFollow();
-                                      setState(() {
-                                        _loadingFollow = false;
-                                        user.isFollowing = isNowFollowing;
-                                      });
-                                    },
-                              child: _loadingFollow
-                                  ? CircularProgressIndicator()
-                                  : Text(
-                                      user.isFollowing ? 'Unfollow' : 'Follow'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: _loadingFollow
+                                      ? null
+                                      : () async {
+                                          setState(() {
+                                            _loadingFollow = true;
+                                          });
+                                          bool isNowFollowing =
+                                              await user.toggleFollow();
+                                          setState(() {
+                                            _loadingFollow = false;
+                                            user.isFollowing = isNowFollowing;
+                                          });
+                                        },
+                                  child: _loadingFollow
+                                      ? CircularProgressIndicator()
+                                      : Text(user.isFollowing
+                                          ? 'Unfollow'
+                                          : 'Follow'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (isFriendRequestExisted) {
+                                        // CANCEL FRIEND REQUEST
+                                        GeneralAPI()
+                                            .cancelFriendRequest(widget.uid);
+                                      } else if (isUserAlreadyFriend) {
+                                        // UNFRIEND
+                                        GeneralAPI().unFriend(widget.uid);
+                                      } else {
+                                        // SEND FRIEND REQUEST
+                                        GeneralAPI()
+                                            .sendFriendRequest(widget.uid);
+                                      }
+                                    });
+                                  },
+                                  child: _loadingFollow
+                                      ? CircularProgressIndicator()
+                                      : Text(
+                                          isFriendRequestExisted
+                                              ? "Cancel request"
+                                              : isUserAlreadyFriend
+                                                  ? "Unfriend"
+                                                  : "Add friend",
+                                        ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

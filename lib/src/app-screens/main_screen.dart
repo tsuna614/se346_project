@@ -81,10 +81,11 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     //Todo: change back later
-    appScreen = HomeScreen(
-      alternateDrawer: alternateDrawer,
-      appName: widget.appName,
-    );
+    // appScreen = HomeScreen(
+    //   alternateDrawer: alternateDrawer,
+    //   appName: widget.appName,
+    // );
+    appScreen = NotificationsScreen();
     // appScreen = ProfileScreen(
     //   alternateDrawer: alternateDrawer,
     // );

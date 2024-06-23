@@ -25,8 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    // GeneralAPI().sendFriendRequest("ULVWLJQuTLW1CtYf6K0sIDBlSuf1");
-
     _postsFuture = PostAPI().loadHomePosts();
   }
 

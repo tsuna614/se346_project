@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:se346_project/src/data/global_data.dart';
@@ -16,6 +17,20 @@ class GeneralAPI {
     return _instance;
   }
   GeneralAPI._internal();
+
+  Future<List<UserProfileData>> getFriends() async {
+    String uid = _firebase.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      return [];
+    }
+    final res = await dio.get('$baseUrl/user/$uid/friends');
+    List<dynamic> jsonData = res.data;
+    List<UserProfileData> users = jsonData.map((user) {
+      return GeneralConverter.convertUserProfileFromJson(user);
+    }).toList();
+    return users;
+  }
+
   Future<List<UserProfileData>> getFollowing() async {
     String uid = _firebase.currentUser?.uid ?? '';
     if (uid.isEmpty) {
@@ -242,69 +257,81 @@ class GeneralAPI {
     }
   }
 
-  // Future<bool> checkForExistingRequest(String friendId) async {
-  //   String userId = _firebase.currentUser!.uid;
-  //   bool isExisting = false;
-  //   await FirebaseFirestore.instance
-  //       .collection('notifications')
-  //       .where('sender', isEqualTo: userId)
-  //       .where('receiver', isEqualTo: friendId)
-  //       .get()
-  //       .then((value) {
-  //     if (value.docs.isNotEmpty) {
-  //       isExisting = true;
-  //     }
-  //   });
-  //   return isExisting;
-  // }
+  Future<bool> checkForExistingRequest(String friendId) async {
+    String userId = _firebase.currentUser!.uid;
+    bool isExisting = false;
+    await FirebaseFirestore.instance
+        .collection('notifications')
+        .where('sender', isEqualTo: userId)
+        .where('receiver', isEqualTo: friendId)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        isExisting = true;
+      }
+    });
+    return isExisting;
+  }
 
-  // Future<bool> isUserAlreadyFriend(String userId) async {
-  //   String currentUserId = _firebase.currentUser!.uid;
-  //   bool isExisting = false;
-  //   try {
-  //     final response = await dio.get('$baseUrl/user/$currentUserId');
-  //     if (response.data[0]["friends"].contains(userId)) {
-  //       isExisting = true;
-  //     }
-  //     return isExisting;
-  //   } catch (e) {
-  //     print("Error: $e");
-  //     return isExisting;
-  //   }
-  // }
+  Future<bool> isUserAlreadyFriend(String userId) async {
+    String currentUserId = _firebase.currentUser!.uid;
+    bool isExisting = false;
+    try {
+      final response = await dio.get('$baseUrl/user/$currentUserId');
+      if (response.data[0]["friends"].contains(userId)) {
+        isExisting = true;
+      }
+      return isExisting;
+    } catch (e) {
+      print("Error: $e");
+      return isExisting;
+    }
+  }
 
-  // void cancelFriendRequest(String friendId) {
-  //   String userId = _firebase.currentUser!.uid;
+  void cancelFriendRequest(String friendId) {
+    String userId = _firebase.currentUser!.uid;
 
-  //   FirebaseFirestore.instance
-  //       .collection('notifications')
-  //       .where('sender', isEqualTo: userId)
-  //       .where('receiver', isEqualTo: friendId)
-  //       .get()
-  //       .then((value) {
-  //     value.docs.forEach((element) {
-  //       FirebaseFirestore.instance
-  //           .collection('notifications')
-  //           .doc(element.id)
-  //           .delete();
-  //     });
-  //   });
-  // }
+    FirebaseFirestore.instance
+        .collection('notifications')
+        .where('sender', isEqualTo: userId)
+        .where('receiver', isEqualTo: friendId)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        FirebaseFirestore.instance
+            .collection('notifications')
+            .doc(element.id)
+            .delete();
+      });
+    });
+  }
 
-  // void sendFriendRequest(String friendId) {
-  //   String userId = _firebase.currentUser!.uid;
+  void sendFriendRequest(String friendId) {
+    String userId = _firebase.currentUser!.uid;
 
-  //   FirebaseFirestore.instance.collection('notifications').add({
-  //     'sender': userId,
-  //     'receiver': friendId,
-  //     'timeCreated': DateTime.now(),
-  //   });
-  // }
+    FirebaseFirestore.instance.collection('notifications').add({
+      'sender': userId,
+      'receiver': friendId,
+      'timeCreated': DateTime.now(),
+    });
+  }
 
-  // void unFriend(String friendId) async {
-  //   String currentUserId = _firebase.currentUser!.uid;
+  void unFriend(String friendId) async {
+    String currentUserId = _firebase.currentUser!.uid;
 
-  //   Dio dio = Dio();
-  //   await dio.put('$baseUrl/user/removeFriend/$friendId/$currentUserId');
-  // }
+    Dio dio = Dio();
+    await dio.put('$baseUrl/user/removeFriend/$friendId/$currentUserId');
+  }
+
+  void removeNotification(String notificationId) {
+    FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(notificationId)
+        .delete();
+  }
+
+  Future<void> addFriend(String senderId, String receiverId) async {
+    final dio = Dio();
+    await dio.put('$baseUrl/user/addFriend/$senderId/$receiverId');
+  }
 }

@@ -42,6 +42,7 @@ dependencies:
   firebase_core: ^2.27.0
   transparent_image: ^2.0.1
   flutter_bloc: ^8.1.5
+  cloud_firestore: ^4.15.8
 dev_dependencies:
   flutter_test:
     sdk: flutter
