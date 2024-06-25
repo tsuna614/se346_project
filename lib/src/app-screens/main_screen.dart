@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:se346_project/src/app-screens/drawer_screen.dart';
-import 'package:se346_project/src/app-screens/media/home_screen.dart';
-import 'package:se346_project/src/app-screens/notifications/notifications_screen.dart';
-import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
-import 'package:se346_project/src/app-screens/friends/friends_screen.dart';
-import 'package:se346_project/src/app-screens/social/social_screen.dart';
+import 'package:se346_project/src/app-screens/home_screen.dart';
+import 'package:se346_project/src/app-screens/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -32,31 +29,16 @@ class _MainScreenState extends State<MainScreen> {
           case 0:
             appScreen = HomeScreen(
               alternateDrawer: alternateDrawer,
-              appName: widget.appName,
             );
             break;
           case 1:
-            appScreen = SocialScreen(
-              alternateDrawer: alternateDrawer,
-            );
-            break;
-          case 2:
             appScreen = ProfileScreen(
               alternateDrawer: alternateDrawer,
             );
             break;
-          case 3:
-            appScreen = FriendsScreen(
-              alternateDrawer: alternateDrawer,
-            );
-            break;
-          case 4:
-            appScreen = NotificationsScreen();
-            break;
           default:
             appScreen = HomeScreen(
               alternateDrawer: alternateDrawer,
-              appName: widget.appName,
             );
         }
         xOffset = 290;
@@ -81,11 +63,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     //Todo: change back later
-    // appScreen = HomeScreen(
-    //   alternateDrawer: alternateDrawer,
-    //   appName: widget.appName,
-    // );
-    appScreen = NotificationsScreen();
+    appScreen = HomeScreen(
+      alternateDrawer: alternateDrawer,
+    );
+    // appScreen = NotificationsScreen();
     // appScreen = ProfileScreen(
     //   alternateDrawer: alternateDrawer,
     // );

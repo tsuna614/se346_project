@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -32,7 +33,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
         //     tileMode: TileMode.mirror,
         //   ),
         // ),
-        color: Color.fromARGB(255, 62, 142, 74),
+        color: Color(0xFF053555),
         child: Padding(
           padding: const EdgeInsets.only(top: 50, left: 40, bottom: 70),
           child: Column(
@@ -48,9 +49,22 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   const SizedBox(
                     width: 20,
                   ),
-                  Image.asset(
-                    'assets/images/Logo.png',
-                    height: 100,
+                  // Image.asset(
+                  //   'assets/images/Logo.png',
+                  //   height: 100,
+                  // ),
+                  Text(
+                    "DePa",
+                    style: GoogleFonts.getFont(
+                      'Lobster',
+                      fontSize: 60,
+                      color: Colors.white,
+                    ),
+                    // style: TextStyle(
+                    //   color: Colors.white,
+                    //   fontSize: 30,
+                    //   fontWeight: FontWeight.bold,
+                    // ),
                   ),
                 ],
               ),
@@ -67,15 +81,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  buildAnimatedButton(context, 2),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  buildAnimatedButton(context, 3),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  buildAnimatedButton(context, 4),
+                  // buildAnimatedButton(context, 2),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // buildAnimatedButton(context, 3),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // buildAnimatedButton(context, 4),
                 ],
               ),
               Expanded(child: Container()),
@@ -111,6 +125,21 @@ class _DrawerScreenState extends State<DrawerScreen> {
   }
 
   Widget buildAnimatedButton(BuildContext context, int itemIndex) {
+    final icon;
+    final text;
+    switch (itemIndex) {
+      case 0:
+        icon = FontAwesomeIcons.house;
+        text = 'Home';
+        break;
+      case 1:
+        icon = FontAwesomeIcons.userLarge;
+        text = 'Profile';
+        break;
+      default:
+        icon = FontAwesomeIcons.userLarge;
+        text = 'Profile';
+    }
     return AnimatedContainer(
       duration: const Duration(milliseconds: 100),
       padding: EdgeInsets.only(
@@ -136,15 +165,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
         child: Row(
           children: [
             Icon(
-              itemIndex == 0
-                  ? FontAwesomeIcons.house
-                  : itemIndex == 1
-                      ? FontAwesomeIcons.magnifyingGlass
-                      : itemIndex == 2
-                          ? FontAwesomeIcons.userLarge
-                          : itemIndex == 3
-                              ? FontAwesomeIcons.userGroup
-                              : FontAwesomeIcons.solidBell,
+              icon,
               color: Colors.white,
               size: 16,
             ),
@@ -152,15 +173,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               width: 20,
             ),
             Text(
-              itemIndex == 0
-                  ? 'Home'
-                  : itemIndex == 1
-                      ? 'Search'
-                      : itemIndex == 2
-                          ? 'Profile'
-                          : itemIndex == 3
-                              ? 'Friends'
-                              : 'Notifications',
+              text,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,

@@ -13,6 +13,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _loginForm = GlobalKey<FormState>();
   final _emailTextController = TextEditingController();
+  final _nameTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
   final _confirmPasswordTextController = TextEditingController();
 
@@ -54,63 +55,67 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4CA414),
+      // backgroundColor: const Color(0xFF4CA414),
       body: Stack(
         children: [
-          Center(
-              child: Padding(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Let\'s get started!',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Let\'s get started!',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Create a new account and start your journey.',
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  _buildLoginForm(),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  _buildAnimatedButton(),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text.rich(
-                      TextSpan(
-                        style: TextStyle(color: Colors.white),
-                        children: [
-                          TextSpan(text: 'Already have an account? '),
-                          TextSpan(
-                              text: 'Sign In.',
-                              style: TextStyle(fontWeight: FontWeight.bold))
-                        ],
+                      const SizedBox(height: 6),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Create a new account and start your journey.',
+                          style: TextStyle(fontSize: 14, color: Colors.black),
+                        ),
                       ),
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      _buildLoginForm(),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ),
+                ),
+                _buildAnimatedButton(),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text.rich(
+                    TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(text: 'Already have an account? '),
+                        TextSpan(
+                            text: 'Sign In.',
+                            style: TextStyle(fontWeight: FontWeight.bold))
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -128,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               'Email',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
           ),
@@ -137,15 +142,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: _emailTextController,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(10)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.1),
+              fillColor: Colors.black.withOpacity(0.02),
               hintText: 'Enter your email',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -163,10 +167,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const Align(
             alignment: Alignment.centerLeft,
             child: Text(
+              'Name',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          TextFormField(
+            controller: _nameTextController,
+            style: const TextStyle(color: Colors.black),
+            decoration: InputDecoration(
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              filled: true,
+              fillColor: Colors.black.withOpacity(0.02),
+              hintText: 'Enter your name',
+              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your name';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
               'Password',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
           ),
@@ -175,15 +213,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: _passwordTextController,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.1),
+              fillColor: Colors.black.withOpacity(0.02),
               hintText: 'Enter your password',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
             ),
             obscureText: true,
             validator: (value) {
@@ -205,7 +243,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               'Confirm Password',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
           ),
@@ -214,15 +252,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           TextFormField(
             controller: _confirmPasswordTextController,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(10)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.1),
+              fillColor: Colors.black.withOpacity(0.02),
               hintText: 'Confirm your password',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
             ),
             obscureText: true,
             validator: (value) {
@@ -251,7 +288,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         width: double.infinity,
         height: 50,
         decoration: BoxDecoration(
-          color: const Color(0xFF3C7C0C),
+          color: const Color(0xFFDEB9F9),
           borderRadius: BorderRadius.circular(20),
         ),
         child: const Center(

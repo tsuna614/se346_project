@@ -61,48 +61,73 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
     return Scaffold(
       // backgroundColor: Colors.grey[800],
-      body: Center(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/Logo.png',
-                // width: 250,
+      body: Column(
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(child: _buildWelcomeImage(mediaQuery)),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
               ),
-              const SizedBox(
-                height: 50,
-              ),
-              _buildLoginForm(),
-              const SizedBox(
-                height: 40,
-              ),
-              _buildAnimatedButton(),
-              TextButton(
-                onPressed: () {
-                  _navigateToSignUp(context);
-                },
-                child: const Text.rich(
-                  TextSpan(
-                    style: TextStyle(color: Color(0xFF3C7C0C)),
-                    children: [
-                      TextSpan(text: 'Don\'t have an account? '),
+              child: Column(
+                children: [
+                  _buildLoginForm(),
+                  // const SizedBox(
+                  //   height: 40,
+                  // ),
+                  Expanded(child: Container()),
+                  _buildSignInButton(),
+                  TextButton(
+                    onPressed: () {
+                      _navigateToSignUp(context);
+                    },
+                    child: const Text.rich(
                       TextSpan(
-                          text: 'Sign Up.',
-                          style: TextStyle(fontWeight: FontWeight.bold))
-                    ],
+                        style: TextStyle(color: Color(0xFF053555)),
+                        children: [
+                          TextSpan(text: 'Don\'t have an account? '),
+                          TextSpan(
+                              text: 'Sign Up.',
+                              style: TextStyle(fontWeight: FontWeight.bold))
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 40),
+                ],
               ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
-      )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeImage(MediaQueryData mediaQuery) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFF053555),
+      ),
+      child: Column(
+        children: [
+          Expanded(child: Container()),
+          // SizedBox(
+          //   height: mediaQuery.size.height * 0.12,
+          // ),
+          Image.asset(
+            'assets/images/full-stack 1.png',
+            // width: 250,
+          ),
+        ],
+      ),
     );
   }
 
@@ -115,16 +140,16 @@ class _LoginScreenState extends State<LoginScreen> {
           const Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Email',
+              'Login to your account',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF3C7C0C),
+                color: Color(0xFF053555),
               ),
             ),
           ),
           const SizedBox(
-            height: 10,
+            height: 20,
           ),
           TextFormField(
             controller: _emailTextController,
@@ -135,8 +160,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(10)),
               filled: true,
               // fill color: CBE4B9
-              fillColor: const Color(0xFFCBE4B9).withOpacity(0.5),
-              hintText: 'Enter your email',
+              fillColor: const Color(0xFFDEB9F9).withOpacity(0.3),
+              hintText: 'Email',
               hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
             ),
             validator: (value) {
@@ -148,17 +173,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(
             height: 20,
-          ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Password',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3C7C0C),
-              ),
-            ),
           ),
           const SizedBox(
             height: 10,
@@ -172,8 +186,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(10)),
               filled: true,
               // fill color: CBE4B9
-              fillColor: const Color(0xFFCBE4B9).withOpacity(0.5),
-              hintText: 'Enter your password',
+              fillColor: const Color(0xFFDEB9F9).withOpacity(0.3),
+              hintText: 'Password',
               hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
             ),
             obscureText: true,
@@ -191,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   double _padding = 6;
 
-  Widget _buildAnimatedButton() {
+  Widget _buildSignInButton() {
     return GestureDetector(
       onTap: () {
         if (_loginForm.currentState!.validate()) {
@@ -218,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
         margin: EdgeInsets.only(top: -(_padding - 6)),
         decoration: BoxDecoration(
           // color: Theme.of(context).primaryColor,
-          color: const Color(0xFF3C7C0C),
+          color: const Color(0xFF053555),
           borderRadius: BorderRadius.circular(10),
         ),
         duration: const Duration(milliseconds: 50),
@@ -227,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 50,
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border.all(color: const Color(0xFF3C7C0C)),
+            border: Border.all(color: const Color(0xFF053555)),
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Center(
@@ -239,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   letterSpacing: 3,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF3C7C0C),
+                  color: Color(0xFF053555),
                 ),
               ),
             ),
