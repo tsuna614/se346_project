@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se346_project/src/app-screens/design-patterns/design_pattern_details_screen.dart';
 
 TextSpan first = const TextSpan(
   children: [
@@ -117,9 +118,13 @@ class _DesginPatternPageState extends State<DesginPatternPage> {
             ),
           ),
           _buildDPBox(
-              index: 0,
-              transform: Matrix4.translationValues(
-                  currentDesignPatternBlockIndex == 0 ? 0 : xOffset, 0, 0)),
+            index: 0,
+            transform: Matrix4.translationValues(
+              currentDesignPatternBlockIndex == 0 ? 0 : xOffset,
+              0,
+              0,
+            ),
+          ),
         ],
       ),
     );
@@ -289,7 +294,15 @@ class _DesginPatternPageState extends State<DesginPatternPage> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => DesignPatternDetailsPage(
+                    pageIndex: index,
+                  ),
+                ),
+              );
+            },
             borderRadius: BorderRadius.circular(20),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -300,15 +313,13 @@ class _DesginPatternPageState extends State<DesginPatternPage> {
                   SizedBox(
                     width: 40,
                   ),
-                  Expanded(
-                    child: Flexible(
-                      // fit: BoxFit.scaleDown,
-                      child: Text(
-                        categoryTitle,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Flexible(
+                    // fit: BoxFit.scaleDown,
+                    child: Text(
+                      categoryTitle,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

@@ -70,6 +70,8 @@ flutter:
   assets:
     - assets/images/Logo.png
     - assets/images/full-stack 1.png
+    - assets/images/categoryhand.png
+    - assets/images/design pattern/
     - assets/posts.json
     - assets/user_profile.json
     - assets/users_database.json

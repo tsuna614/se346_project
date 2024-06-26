@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:se346_project/src/app-screens/bookmarks_screen.dart';
-import 'package:se346_project/src/app-screens/categories_screen.dart';
+import 'package:se346_project/src/app-screens/catalog/catalog_screen.dart';
 import 'package:se346_project/src/app-screens/design-patterns/design_pattern.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,16 +21,18 @@ class _HomeScreenState extends State<HomeScreen> {
   final _pageController = PageController(initialPage: 0);
   final List<Widget> _pages = [
     DesginPatternPage(),
-    CategoriesScreen(),
+    CatalogScreen(),
     BookmarksScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       // backgroundColor: Colors.black.withOpacity(0.03),
       appBar: AppBar(
         // title: const Text('Home'),
+        backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu),
@@ -89,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 selectedColor: Colors.lightBlue.shade300),
             SalomonBottomBarItem(
               icon: Icon(FontAwesomeIcons.solidFolderOpen),
-              title: Text('Categories Details'),
+              title: Text('Catalog'),
               selectedColor: Colors.pink,
             ),
             SalomonBottomBarItem(
