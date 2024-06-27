@@ -81,10 +81,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  // buildAnimatedButton(context, 2),
-                  // const SizedBox(
-                  //   height: 20,
-                  // ),
+                  buildAnimatedButton(context, 2),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   // buildAnimatedButton(context, 3),
                   // const SizedBox(
                   //   height: 20,
@@ -133,6 +133,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
         text = 'Home';
         break;
       case 1:
+        icon = Icons.chat;
+        text = 'Chatbot';
+        break;
+      case 2:
         icon = FontAwesomeIcons.userLarge;
         text = 'Profile';
         break;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:se346_project/src/app-screens/catalog/catalog_details_screen.dart';
 
 List<String> creationalPatterns = [
   'Factory Method',
@@ -87,13 +88,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
+                const Flexible(
                   child: Text(
                     "The Catalog of Design Patterns",
                     style: TextStyle(
-                      fontSize: 36,
-                      // fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.lobsterTwo().fontFamily,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -284,7 +284,15 @@ class _CatalogScreenState extends State<CatalogScreen> {
       ),
       child: Material(
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CatalogDetailsScreen(
+                  designPatternName: title,
+                ),
+              ),
+            );
+          },
           borderRadius: BorderRadius.circular(10),
           child: Padding(
             padding: const EdgeInsets.all(16.0),

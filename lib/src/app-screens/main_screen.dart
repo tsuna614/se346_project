@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:se346_project/src/app-screens/chatbot/chatbot_screen.dart';
 import 'package:se346_project/src/app-screens/drawer_screen.dart';
 import 'package:se346_project/src/app-screens/home_screen.dart';
-import 'package:se346_project/src/app-screens/profile_screen.dart';
+import 'package:se346_project/src/app-screens/profile/profile_screen.dart';
+import 'package:se346_project/src/provider/user_provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -32,6 +36,11 @@ class _MainScreenState extends State<MainScreen> {
             );
             break;
           case 1:
+            appScreen = ChatScreen(
+              alternateDrawer: alternateDrawer,
+            );
+            break;
+          case 2:
             appScreen = ProfileScreen(
               alternateDrawer: alternateDrawer,
             );
@@ -66,6 +75,12 @@ class _MainScreenState extends State<MainScreen> {
     appScreen = HomeScreen(
       alternateDrawer: alternateDrawer,
     );
+
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final id = auth.currentUser!.uid;
+
+    Provider.of<UserProvider>(context, listen: false).fetchUserData(id);
+
     // appScreen = NotificationsScreen();
     // appScreen = ProfileScreen(
     //   alternateDrawer: alternateDrawer,

@@ -13,11 +13,16 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _loginForm = GlobalKey<FormState>();
   final _emailTextController = TextEditingController();
-  final _nameTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
   final _confirmPasswordTextController = TextEditingController();
 
   final dio = Dio();
+
+  bool _isFormFilledIn() {
+    return _emailTextController.text.isNotEmpty &&
+        _passwordTextController.text.isNotEmpty &&
+        _confirmPasswordTextController.text.isNotEmpty;
+  }
 
   void _submit() async {
     final response = await dio
@@ -160,39 +165,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Name',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-            controller: _nameTextController,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              filled: true,
-              fillColor: Colors.black.withOpacity(0.02),
-              hintText: 'Enter your name',
-              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your name';
-              }
-              return null;
+            onChanged: (value) {
+              setState(() {});
             },
           ),
           const SizedBox(
@@ -233,6 +207,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
+            onChanged: (value) {
+              setState(() {});
+            },
           ),
           const SizedBox(
             height: 20,
@@ -271,6 +248,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
               return null;
             },
+            onChanged: (value) {
+              setState(() {});
+            },
           ),
         ],
       ),
@@ -280,6 +260,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildAnimatedButton() {
     return GestureDetector(
       onTap: () {
+        if (!_isFormFilledIn()) {
+          return;
+        }
         if (_loginForm.currentState!.validate()) {
           _submit();
         }
@@ -288,7 +271,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         width: double.infinity,
         height: 50,
         decoration: BoxDecoration(
-          color: const Color(0xFFDEB9F9),
+          color: _isFormFilledIn() ? const Color(0xFFDEB9F9) : Colors.grey,
           borderRadius: BorderRadius.circular(20),
         ),
         child: const Center(
@@ -309,75 +292,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-
-// class CustomClipPathPurple extends CustomClipper<Path> {
-//   CustomClipPathPurple({required this.context});
-
-//   final BuildContext context;
-
-//   @override
-//   Path getClip(Size size) {
-//     // print(size);
-//     // double w = size.width;
-//     // double h = size.height;
-
-//     double w = MediaQuery.of(context).size.width;
-//     double h = MediaQuery.of(context).size.height;
-
-//     final path = Path();
-
-//     // path.moveTo(0, 0);
-//     // path.lineTo(w * 0.5, h * 0.0);
-//     // path.lineTo(w * 0.85, h * 0.12);
-//     // path.lineTo(w, h * 0.12);
-
-//     path.moveTo(0, 0);
-//     path.lineTo(0, h * 0.05);
-//     path.lineTo(w, h * 0.2);
-//     // path.quadraticBezierTo(w * 0.1, h * 0.12, w * 0.5, h * 0.08);
-//     // path.quadraticBezierTo(w * 0.8, h * 0.05, w, h * 0.11);
-//     path.lineTo(w, 0);
-//     path.close();
-
-//     return path;
-//   }
-
-//   @override
-//   bool shouldReclip(CustomClipper<Path> oldClipper) {
-//     return false;
-//   }
-// }
-
-// class CustomClipPathPurpleAccent extends CustomClipper<Path> {
-//   CustomClipPathPurpleAccent({required this.context});
-
-//   final BuildContext context;
-
-//   @override
-//   Path getClip(Size size) {
-//     // print(size);
-//     // double w = size.width;
-//     // double h = size.height;
-
-//     double w = MediaQuery.of(context).size.width;
-//     double h = MediaQuery.of(context).size.height;
-
-//     final path = Path();
-
-//     path.moveTo(0, 0);
-//     path.lineTo(0, h * 0.2);
-//     path.lineTo(w, h * 0.05);
-
-//     // path.quadraticBezierTo(w * 0.1, h * 0.1, w * 0.7, h * 0.12);
-//     // path.quadraticBezierTo(w * 1, h * 0.13, w, h * 0.08);
-//     path.lineTo(w, 0);
-//     path.close();
-
-//     return path;
-//   }
-
-//   @override
-//   bool shouldReclip(CustomClipper<Path> oldClipper) {
-//     return false;
-//   }
-// }

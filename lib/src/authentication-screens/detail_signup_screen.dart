@@ -21,7 +21,6 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
 
   final _firstNameTextField = TextEditingController();
   final _lastNameTextField = TextEditingController();
-  final _bioTextField = TextEditingController();
 
   final dio = Dio();
 
@@ -31,7 +30,6 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
   void dispose() {
     _firstNameTextField.dispose();
     _lastNameTextField.dispose();
-    _bioTextField.dispose();
     super.dispose();
   }
 
@@ -46,9 +44,7 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
           'userId': value.user!.uid,
           'email': widget.email,
           'password': widget.password,
-          'firstName': _firstNameTextField.text,
-          'lastName': _lastNameTextField.text,
-          'bio': _bioTextField.text,
+          'name': "${_firstNameTextField.text} ${_lastNameTextField.text}",
         },
       ).catchError((error) {
         throw Exception('Failed to create user');
@@ -69,7 +65,7 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4CA414),
+      backgroundColor: const Color(0xFF053555),
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(20),
@@ -170,35 +166,6 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
             },
             // onSaved: (newValue) => _enteredPassword = newValue!,
           ),
-          const SizedBox(height: 30),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Bio',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-          const SizedBox(height: 6),
-          TextFormField(
-            controller: _bioTextField,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(10)),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.1),
-              hintText: 'A little interesting fact about yourself',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your bio';
-              }
-              return null;
-            },
-            // onSaved: (newValue) => _enteredPassword = newValue!,
-          ),
           const SizedBox(height: 60),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -208,7 +175,7 @@ class _DetailSignUpScreenState extends State<DetailSignUpScreen> {
             child: const Text(
               'Finalize',
               style: TextStyle(
-                  color: Color(0xFF3C7C0C),
+                  color: Color(0xFF02131D),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 3,
                   fontSize: 16),

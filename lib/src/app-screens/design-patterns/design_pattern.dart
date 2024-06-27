@@ -262,7 +262,7 @@ class _DesginPatternPageState extends State<DesginPatternPage> {
         categoryTitle = "History of Design Patterns";
         break;
       case 1:
-        categoryTitle = "Why should I learn Design Patterns? ";
+        categoryTitle = "Why should I learn Design Patterns?";
         break;
       case 2:
         categoryTitle = "Criticism of patterns";
@@ -299,6 +299,7 @@ class _DesginPatternPageState extends State<DesginPatternPage> {
                 MaterialPageRoute(
                   builder: (context) => DesignPatternDetailsPage(
                     pageIndex: index,
+                    pageTitle: categoryTitle,
                   ),
                 ),
               );
